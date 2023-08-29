@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -14,24 +14,26 @@ import { LetturaService } from 'src/app/_services/lettura.service';
   styleUrls: ['./aggiungi-lettura.component.scss'],
 })
 export class AggiungiLetturaComponent implements OnInit {
+  @Input()
+  lettura: Lettura | undefined;
   form: FormGroup = new FormGroup([]);
   constructor(private service: LetturaService, private builder: FormBuilder) {}
 
   ngOnInit(): void {
     this.form = this.builder.group({
-      lettura: new FormControl('', [Validators.required]),
-      giorno: new FormControl('', Validators.required),
+      lettura: new FormControl(this.lettura?.lettura, [Validators.required]),
+      giorno: new FormControl(this.lettura?.giorno, Validators.required),
     });
   }
 
   salva() {
-    const lettura = {
+    this.lettura = {
+      id: this.lettura?.id,
       lettura: this.form.get('lettura')?.value,
       giorno: this.form.get('giorno')?.value,
     } as Lettura;
-    lettura.giorno.setHours(0, 0, 0, 0);
-    console.log('salva');
-    this.service.salva(lettura).subscribe({
+    this.lettura.giorno.setHours(0, 0, 0, 0);
+    this.service.salva(this.lettura).subscribe({
       next: (data) => {
         console.log('save ok: ', data);
       },

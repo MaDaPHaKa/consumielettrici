@@ -1,0 +1,20 @@
+.table-input .mat-mdc-form-field-infix {
+  min-height: 30px !important;
+}
+
+.table-input
+  .mdc-text-field--no-label:not(.mdc-text-field--outlined):not(
+    .mdc-text-field--textarea
+  )
+  .mat-mdc-form-field-infix {
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
+}
+
+::ng-deep .mat-input-wrapper{
+    width:400px !important;
+  }
+
+  .mat-input-wrapper{
+    width:400px !important;
+  }

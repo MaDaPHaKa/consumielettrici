@@ -1,5 +1,5 @@
 import { Table, liveQuery } from 'dexie';
-import { Observable, from } from 'rxjs';
+import { Observable, from, of } from 'rxjs';
 import { Identifiable } from '../_db/db';
 
 export abstract class BaseRepository<T extends Identifiable> {
@@ -27,5 +27,14 @@ export abstract class BaseRepository<T extends Identifiable> {
     } else {
       return from(this.table.add(lettura));
     }
+  }
+
+  deleteByEntity(entity: T): Observable<void> {
+    if (entity.id) return this.deleteById(entity.id);
+    return of(undefined);
+  }
+
+  deleteById(id: number): Observable<void> {
+    return from(this.table.delete(id));
   }
 }

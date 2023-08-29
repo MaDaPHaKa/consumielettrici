@@ -1,0 +1,39 @@
+<h1>Elettrodomestici</h1>
+<div class="columns is-multiline">
+  <button mat-button [routerLink]="'/home'">Home</button>
+  <div class="column is-full">
+    <mat-label>Nuovo Elettrodomestico</mat-label>
+    <input class="input is-normal" type="text" [(ngModel)]="nuovo" />
+    <button mat-button (click)="aggiungi()">Aggiungi</button>
+  </div>
+  <div class="column is-full">
+    <table
+      mat-table
+      [dataSource]="dataSource"
+      class="mat-elevation-z8"
+      multiTemplateDataRows
+    >
+      <ng-container matColumnDef="nome">
+        <th mat-header-cell *matHeaderCellDef>Data</th>
+        <td mat-cell *matCellDef="let element" class="table-input">
+          <input
+            class="input is-normal"
+            type="text"
+            [(ngModel)]="element.nome"
+          />
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="azioni">
+        <th mat-header-cell *matHeaderCellDef>Azioni</th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-button (click)="salva(element)">Salva</button>
+          <button mat-button (click)="elimina(element)">Elimina</button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </div>
+</div>

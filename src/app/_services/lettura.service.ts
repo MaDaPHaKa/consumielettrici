@@ -22,11 +22,17 @@ export class LetturaService {
       map((letture) =>
         letture.map((lettura) => {
           const letturaDto = new LetturaDto();
+          if (lettura.id) letturaDto.id = lettura.id;
+          letturaDto.giorno = lettura.giorno;
+          letturaDto.lettura = lettura.lettura;
           this.usoRepository.getByGiorno(lettura.giorno).pipe(
             map((usi) =>
               usi.map((uso) => {
                 const letturaElettrodomesticoDto =
                   new LetturaElettrodomesticoDto();
+                letturaElettrodomesticoDto.durata = uso.durata;
+                letturaElettrodomesticoDto.giorno = uso.giorno;
+                letturaElettrodomesticoDto.note = uso.note;
                 this.elettrodomesitcoRepository
                   .get(uso.elettrodomesticoId)
                   .pipe(
@@ -50,5 +56,9 @@ export class LetturaService {
 
   salva(lettura: Lettura): Observable<number> {
     return this.repository.save(lettura);
+  }
+
+  elimina(lettura: Lettura): Observable<void> {
+    return this.repository.deleteByEntity(lettura);
   }
 }

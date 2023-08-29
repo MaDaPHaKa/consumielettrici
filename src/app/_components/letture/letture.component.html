@@ -1,10 +1,15 @@
 <h1>Letture</h1>
 <div>
   <button mat-button [routerLink]="'/aggiungilettura'">Aggiungi</button>
-  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+  <table
+    mat-table
+    [dataSource]="dataSource"
+    class="mat-elevation-z8"
+    multiTemplateDataRows
+  >
     <ng-container matColumnDef="data">
       <th mat-header-cell *matHeaderCellDef>Data</th>
-      <td mat-cell *matCellDef="let element">{{ element.giorno }}</td>
+      <td mat-cell *matCellDef="let element">{{ element.giorno | date }}</td>
     </ng-container>
 
     <ng-container matColumnDef="lettura">
@@ -20,7 +25,7 @@
     </ng-container>
 
     <ng-container matColumnDef="elettrodomestici">
-      <th mat-header-cell *matHeaderCellDef>Symbol</th>
+      <th mat-header-cell *matHeaderCellDef>Elettrodomestici</th>
       <td mat-cell *matCellDef="let element">
         <app-uso-elettrodomestico
           *ngFor="let el of element.elettrodomestici"
@@ -29,14 +34,41 @@
       </td>
     </ng-container>
 
-    <ng-container matColumnDef="elimina">
-      <th mat-header-cell *matHeaderCellDef>Elimina</th>
+    <ng-container matColumnDef="azioni">
+      <th mat-header-cell *matHeaderCellDef>Azioni</th>
       <td mat-cell *matCellDef="let element">
         <button mat-button (click)="elimina(element)">Elimina</button>
+        <button mat-button (click)="espandi(element)">Espandi</button>
+      </td>
+    </ng-container>
+
+    <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+    <ng-container matColumnDef="expandedDetail">
+      <td
+        mat-cell
+        *matCellDef="let element"
+        [attr.colspan]="displayedColumns.length"
+      >
+        <div
+          class="example-element-detail"
+          [@detailExpand]="element.expanded ? 'expanded' : 'collapsed'"
+        >
+          <app-aggiungi-lettura [lettura]="element"></app-aggiungi-lettura>
+        </div>
       </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    <tr
+      mat-row
+      *matRowDef="let row; columns: displayedColumns"
+      [class.example-expanded-row]="row.expanded"
+      class="example-element-row"
+    ></tr>
+    <tr
+      mat-row
+      *matRowDef="let row; columns: ['expandedDetail']"
+      class="example-detail-row"
+    ></tr>
   </table>
 </div>
