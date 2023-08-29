@@ -1,4 +1,5 @@
-import { Observable, Table, liveQuery } from 'dexie';
+import { Table, liveQuery } from 'dexie';
+import { Observable, from } from 'rxjs';
 import { Identifiable } from '../_db/db';
 
 export abstract class BaseRepository<T extends Identifiable> {
@@ -9,14 +10,22 @@ export abstract class BaseRepository<T extends Identifiable> {
   }
 
   getAll(): Observable<T[]> {
-    return liveQuery(() => this.table.toArray());
+    return from(liveQuery(() => this.table.toArray()));
   }
 
-  save(lettura: T) {
+  get(id: number): Observable<T | undefined> {
+    return from(this.table.get(id));
+  }
+
+  getByGiorno(giornoVal: Date): Observable<T[]> {
+    return from(this.table.where('giorno').equals(giornoVal).toArray());
+  }
+
+  save(lettura: T): Observable<number> {
     if (lettura.id) {
-      this.table.update(lettura.id, lettura);
+      return from(this.table.update(lettura.id, lettura));
     } else {
-      this.table.add(lettura);
+      return from(this.table.add(lettura));
     }
   }
 }

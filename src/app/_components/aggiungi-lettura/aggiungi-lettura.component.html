@@ -1,1 +1,20 @@
-<p>aggiungi-lettura works!</p>
+<div>
+  <form [formGroup]="form">
+    <mat-form-field>
+      <mat-label>Lettura</mat-label>
+      <input [formControlName]="'lettura'" matInput type="number" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Giorno</mat-label>
+      <input matInput [formControlName]="'giorno'" [matDatepicker]="picker" />
+      <mat-hint>DD/MM/YYYY</mat-hint>
+      <mat-datepicker-toggle
+        matIconSuffix
+        [for]="picker"
+      ></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+  </form>
+  <button mat-button [disabled]="!form.valid" (click)="salva()">Salva</button
+  ><button mat-button [routerLink]="'/letture'">Indietro</button>
+</div>
