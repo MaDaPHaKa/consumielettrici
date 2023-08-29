@@ -19,10 +19,13 @@ export class UsoElettrodomesticoComponent {
       seconds = seconds % 3600; // seconds remaining after extracting hours
       // 3- Extract minutes:
       const minutes = seconds / 60; // 60 seconds in 1 minute
-      // 4- Keep only seconds not extracted to minutes:
-      seconds = seconds % 60;
-      return hours + 'h ' + minutes + 'm ' + seconds + 's';
+      return hours + 'h ' + minutes + 'm ';
     }
     return '';
+  }
+
+  modifica() {
+    if (this.uso) {
+    }
   }
 }

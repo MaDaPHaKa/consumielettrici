@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmDialogComponent } from '../_components/confirm-dialog/confirm-dialog.component';
-import { Elettrodomestico } from '../_db/db';
-import { ElettrodomesticoRepository } from '../_repositories/elettrodomestico-repository';
-import { UtilsService } from '../_services/utils.service';
+import { Elettrodomestico } from 'src/app/_db/db';
+import { ElettrodomesticoRepository } from 'src/app/_repositories/elettrodomestico-repository';
+import { UtilsService } from 'src/app/_services/utils.service';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-elettrodomestici',

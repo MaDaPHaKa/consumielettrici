@@ -17,7 +17,12 @@ export class AggiungiLetturaComponent implements OnInit {
   @Input()
   lettura: Lettura | undefined;
   form: FormGroup = new FormGroup([]);
-  constructor(private service: LetturaService, private builder: FormBuilder) {}
+  constructor(private service: LetturaService, private builder: FormBuilder) {
+    this.form = this.builder.group({
+      lettura: new FormControl(this.lettura?.lettura, [Validators.required]),
+      giorno: new FormControl(this.lettura?.giorno, Validators.required),
+    });
+  }
 
   ngOnInit(): void {
     this.form = this.builder.group({

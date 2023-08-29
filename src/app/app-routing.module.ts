@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AggiungiLetturaComponent } from './_components/aggiungi-lettura/aggiungi-lettura.component';
 import { HomeComponent } from './_components/home/home.component';
 import { LettureComponent } from './_components/letture/letture.component';
-import { ElettrodomesticiComponent } from './elettrodomestici/elettrodomestici.component';
+import { ElettrodomesticiComponent } from './_components/elettrodomestici/elettrodomestici.component';
 
 const routes: Routes = [
   { path: 'home', component: HomeComponent },

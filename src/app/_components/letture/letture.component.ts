@@ -11,6 +11,8 @@ import { LetturaService } from 'src/app/_services/lettura.service';
 import { UtilsService } from 'src/app/_services/utils.service';
 import { LetturaDto } from 'src/app/dto/lettura-dto';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { LetturaElettrodomesticiComponent } from '../lettura-elettrodomestici/lettura-elettrodomestici.component';
+import { UsoElettrodomesticoRepository } from 'src/app/_repositories/uso-elettrodomestico-repository';
 
 @Component({
   selector: 'app-letture',
@@ -38,6 +40,7 @@ export class LettureComponent implements OnInit {
   ];
   constructor(
     private service: LetturaService,
+    private usoEletRepo: UsoElettrodomesticoRepository,
     public dialog: MatDialog,
     private utils: UtilsService
   ) {}
@@ -75,8 +78,22 @@ export class LettureComponent implements OnInit {
     });
   }
   espandi(element: LetturaDto) {
-    console.log('before toggle: ', element.expanded);
     element.expanded = !element.expanded;
-    console.log('before toggle: ', element.expanded);
+  }
+  aggiungiElettrodomestico(lettura: LetturaDto) {
+    const dialogRef = this.dialog.open(LetturaElettrodomesticiComponent, {
+      data: { lettura: lettura },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('letture, res: ', result);
+      if (result) {
+        this.usoEletRepo.save(result).subscribe({
+          next: (data) => {},
+          error: (err) => console.log('errore cancellazione: ', err),
+          complete: () => {},
+        });
+      }
+    });
   }
 }

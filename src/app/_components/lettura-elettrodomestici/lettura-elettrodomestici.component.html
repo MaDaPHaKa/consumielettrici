@@ -1,0 +1,53 @@
+<h1 mat-dialog-title>Elettrodomestico</h1>
+<div mat-dialog-content>
+  <form [formGroup]="form">
+    <div>
+      <mat-form-field>
+        <mat-label>Elettrodomestico</mat-label>
+        <mat-select [formControlName]="'elettrodomesticoId'">
+          <mat-option *ngFor="let el of elett" [value]="el.id">
+            {{ el.nome }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div>
+      <mat-form-field>
+        <mat-label>Ore Durata</mat-label>
+        <input [formControlName]="'durataMin'" matInput type="number" />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Minuti Durata</mat-label>
+        <input [formControlName]="'durataOre'" matInput type="number" />
+      </mat-form-field>
+    </div>
+    <div>
+      <mat-form-field>
+        <mat-label>Giorno</mat-label>
+        <input matInput [formControlName]="'giorno'" [matDatepicker]="picker" />
+        <mat-hint>DD/MM/YYYY</mat-hint>
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="picker"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+    </div>
+    <div>
+      <mat-form-field>
+        <mat-label>Note</mat-label>
+        <textarea [formControlName]="'note'" matInput type="number"></textarea>
+      </mat-form-field>
+    </div>
+  </form>
+</div>
+<div mat-dialog-actions>
+  <button
+    mat-button
+    [disabled]="!form.valid || !durataValida()"
+    (click)="salva()"
+  >
+    Salva
+  </button>
+  <button mat-button (click)="annulla()">Annulla</button>
+</div>
