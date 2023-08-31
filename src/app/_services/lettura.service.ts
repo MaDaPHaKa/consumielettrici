@@ -1,57 +1,67 @@
 import { Injectable } from '@angular/core';
-import { Observable, forkJoin, map, mergeMap } from 'rxjs';
-import { ElettrodomesticoRepository } from '../_repositories/elettrodomestico-repository';
-import { LetturaRepository } from '../_repositories/lettura-repository';
-import { UsoElettrodomesticoRepository } from '../_repositories/uso-elettrodomestico-repository';
-import { LetturaDto } from '../dto/lettura-dto';
-import { LetturaElettrodomesticoDto } from '../dto/lettura-elettrodomestico-dto';
+import { Observable, forkJoin, from, map, mergeMap } from 'rxjs';
 import { Lettura } from '../_db/db';
+import { LetturaRepository } from '../_repositories/lettura-repository';
+import { LetturaDto } from '../dto/lettura-dto';
+import { UsoElettrodomesticoService } from './uso-elettrodomestico.service';
+import { liveQuery } from 'dexie';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LetturaService {
   constructor(
-    private repository: LetturaRepository,
-    private elettrodomesitcoRepository: ElettrodomesticoRepository,
-    private usoRepository: UsoElettrodomesticoRepository
+    public repository: LetturaRepository,
+    private usoService: UsoElettrodomesticoService
   ) {}
 
   getTableValues(): Observable<LetturaDto[]> {
     return this.repository.getAll().pipe(
-      map((letture) =>
-        letture.map((lettura) => {
-          const letturaDto = new LetturaDto();
-          if (lettura.id) letturaDto.id = lettura.id;
-          letturaDto.giorno = lettura.giorno;
-          letturaDto.lettura = lettura.lettura;
-          this.usoRepository.getByGiorno(lettura.giorno).pipe(
-            map((usi) =>
-              usi.map((uso) => {
-                const letturaElettrodomesticoDto =
-                  new LetturaElettrodomesticoDto();
-                letturaElettrodomesticoDto.durata = uso.durata;
-                letturaElettrodomesticoDto.giorno = uso.giorno;
-                letturaElettrodomesticoDto.note = uso.note;
-                this.elettrodomesitcoRepository
-                  .get(uso.elettrodomesticoId)
-                  .pipe(
-                    map((elettrodomestico) => {
-                      if (elettrodomestico) {
-                        letturaElettrodomesticoDto.elettrodomestico =
-                          elettrodomestico;
-                      }
-                    })
-                  );
-                letturaDto.elettrodomestici.push(letturaElettrodomesticoDto);
-                return letturaElettrodomesticoDto;
+      mergeMap((letture) =>
+        forkJoin(
+          letture.map((lettura) =>
+            this.usoService.getByGiorno(lettura.giorno).pipe(
+              map((usiDto) => {
+                const dto = new LetturaDto();
+                Object.assign(dto, lettura);
+                dto.elettrodomestici = usiDto;
+                return dto;
               })
             )
-          );
-          return letturaDto;
-        })
+          )
+        )
       )
     );
+  }
+
+  getLetturePerChart(
+    dal: Date | undefined,
+    al: Date | undefined
+  ): Observable<Lettura[]> {
+    if (dal && al) {
+      return from(
+        liveQuery(() =>
+          this.repository.table
+            .where('giorno')
+            .between(dal, al, true, true)
+            .toArray()
+        )
+      );
+    } else if (al) {
+      return from(
+        liveQuery(() =>
+          this.repository.table.where('giorno').belowOrEqual(al).toArray()
+        )
+      );
+    } else if (dal) {
+      return from(
+        liveQuery(() =>
+          this.repository.table.where('giorno').aboveOrEqual(dal).toArray()
+        )
+      );
+    } else {
+      return this.repository.getAll();
+    }
   }
 
   salva(lettura: Lettura): Observable<number> {

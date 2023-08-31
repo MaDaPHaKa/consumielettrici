@@ -6,4 +6,6 @@ export class LetturaDto {
   lettura: number = -1;
   elettrodomestici: LetturaElettrodomesticoDto[] = [];
   expanded = false;
+  consumo = -1;
+  escludiDaMedia = false;
 }

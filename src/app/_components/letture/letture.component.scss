@@ -15,3 +15,8 @@
     background: #b7b7b773;
     text-align: center;
   }
+
+  .overflow-table-container {
+    max-height: 80vh;
+    overflow: auto;
+  }

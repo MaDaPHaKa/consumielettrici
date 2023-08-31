@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Elettrodomestico, Lettura, db } from '../_db/db';
+import { Elettrodomestico, db } from '../_db/db';
 import { BaseRepository } from './base-repository';
 
 @Injectable({
@@ -9,4 +9,5 @@ export class ElettrodomesticoRepository extends BaseRepository<Elettrodomestico>
   constructor() {
     super(db.elettrodomestici);
   }
+
 }

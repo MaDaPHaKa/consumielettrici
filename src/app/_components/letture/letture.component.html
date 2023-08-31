@@ -1,77 +1,111 @@
-<h1>Letture</h1>
-<div>
-  <button mat-button [routerLink]="'/aggiungilettura'">Aggiungi</button>
-  <table
-    mat-table
-    [dataSource]="dataSource"
-    class="mat-elevation-z8"
-    multiTemplateDataRows
-  >
-    <ng-container matColumnDef="data">
-      <th mat-header-cell *matHeaderCellDef>Data</th>
-      <td mat-cell *matCellDef="let element">{{ element.giorno | date }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="lettura">
-      <th mat-header-cell *matHeaderCellDef>Lettura</th>
-      <td mat-cell *matCellDef="let element">{{ element.lettura }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="giorno">
-      <th mat-header-cell *matHeaderCellDef>Giorno</th>
-      <td mat-cell *matCellDef="let element">
-        {{ giornoSettimana(element.giorno) }}
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="elettrodomestici">
-      <th mat-header-cell *matHeaderCellDef>Elettrodomestici</th>
-      <td mat-cell *matCellDef="let element">
-        <app-uso-elettrodomestico
-          *ngFor="let el of element.elettrodomestici"
-          [uso]="el"
-        ></app-uso-elettrodomestico>
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="azioni">
-      <th mat-header-cell *matHeaderCellDef>Azioni</th>
-      <td mat-cell *matCellDef="let element">
-        <button mat-button (click)="elimina(element)">Elimina</button>
-        <button mat-button (click)="espandi(element)">Espandi</button>
-        <button mat-button (click)="aggiungiElettrodomestico(element)">
-          Aggiungi Elettrodomestico
-        </button>
-      </td>
-    </ng-container>
-
-    <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
-    <ng-container matColumnDef="expandedDetail">
-      <td
-        mat-cell
-        *matCellDef="let element"
-        [attr.colspan]="displayedColumns.length"
+<div class="columns is-centered">
+  <div class="column is-full table-container">
+    <button mat-button [routerLink]="'/aggiungilettura'">Aggiungi</button>
+    <section class="overflow-table-container">
+      <table
+        mat-table
+        [dataSource]="dataSource"
+        class="mat-elevation-z8"
+        multiTemplateDataRows
       >
-        <div
-          class="example-element-detail"
-          [@detailExpand]="element.expanded ? 'expanded' : 'collapsed'"
-        >
-          <app-aggiungi-lettura [lettura]="element"></app-aggiungi-lettura>
-        </div>
-      </td>
-    </ng-container>
+        <ng-container matColumnDef="data">
+          <th mat-header-cell *matHeaderCellDef>Data</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.giorno | date }}
+          </td>
+        </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr
-      mat-row
-      *matRowDef="let row; columns: displayedColumns"
-      [class.example-expanded-row]="row.expanded"
-      class="example-element-row"
-    ></tr>
-    <tr
-      mat-row
-      *matRowDef="let row; columns: ['expandedDetail']"
-      class="example-detail-row"
-    ></tr>
-  </table>
+        <ng-container matColumnDef="lettura">
+          <th mat-header-cell *matHeaderCellDef>Lettura</th>
+          <td mat-cell *matCellDef="let element">{{ element.lettura }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="giorno">
+          <th mat-header-cell *matHeaderCellDef>Giorno</th>
+          <td mat-cell *matCellDef="let element">
+            {{ giornoSettimana(element.giorno) }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="elettrodomestici">
+          <th mat-header-cell *matHeaderCellDef>Elettrodomestici</th>
+          <td mat-cell *matCellDef="let element">
+            <app-uso-elettrodomestico
+              *ngFor="let el of element.elettrodomestici"
+              [uso]="el"
+              (modified)="onUsoUpdate($event)"
+            ></app-uso-elettrodomestico>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="escludiDaMedia">
+          <th mat-header-cell *matHeaderCellDef>Media</th>
+          <td mat-cell *matCellDef="let element">
+            {{ !element.escludiDaMedia }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="azioni">
+          <th mat-header-cell *matHeaderCellDef>Azioni</th>
+          <td mat-cell *matCellDef="let element">
+            <button
+              mat-icon-button
+              class="small-icon-button"
+              (click)="elimina(element)"
+              aria-label="Elimina"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              class="small-icon-button"
+              (click)="espandi(element)"
+              aria-label="Espandi\Collassa"
+            >
+              <mat-icon *ngIf="element.expanded">expand_less</mat-icon>
+              <mat-icon *ngIf="!element.expanded">expand_more</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              class="small-icon-button"
+              (click)="aggiungiElettrodomestico(element)"
+              aria-label="Aggiungi Uso"
+            >
+              <mat-icon>add</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+        <ng-container matColumnDef="expandedDetail">
+          <td
+            mat-cell
+            *matCellDef="let element"
+            [attr.colspan]="displayedColumns.length"
+          >
+            <div
+              class="example-element-detail"
+              [@detailExpand]="element.expanded ? 'expanded' : 'collapsed'"
+            >
+              <app-aggiungi-lettura [lettura]="element"></app-aggiungi-lettura>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr
+          mat-header-row
+          *matHeaderRowDef="displayedColumns; sticky: true"
+        ></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          [class.example-expanded-row]="row.expanded"
+          class="example-element-row"
+        ></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: ['expandedDetail']"
+          class="example-detail-row"
+        ></tr>
+      </table>
+    </section>
+  </div>
 </div>

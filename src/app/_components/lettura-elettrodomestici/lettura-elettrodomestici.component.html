@@ -13,12 +13,12 @@
     </div>
     <div>
       <mat-form-field>
-        <mat-label>Ore Durata</mat-label>
-        <input [formControlName]="'durataMin'" matInput type="number" />
+        <mat-label>Ore</mat-label>
+        <input [formControlName]="'durataOre'" matInput type="number" />
       </mat-form-field>
       <mat-form-field>
-        <mat-label>Minuti Durata</mat-label>
-        <input [formControlName]="'durataOre'" matInput type="number" />
+        <mat-label>Minuti</mat-label>
+        <input [formControlName]="'durataMin'" matInput type="number" />
       </mat-form-field>
     </div>
     <div>
@@ -37,6 +37,25 @@
       <mat-form-field>
         <mat-label>Note</mat-label>
         <textarea [formControlName]="'note'" matInput type="number"></textarea>
+      </mat-form-field>
+    </div>
+    <div *ngIf="uso === undefined">
+      <mat-form-field>
+        <mat-label>Enter a date range</mat-label>
+        <mat-date-range-input [rangePicker]="range">
+          <input
+            matStartDate
+            [formControlName]="'dal'"
+            placeholder="Start date"
+          />
+          <input matEndDate [formControlName]="'al'" placeholder="End date" />
+        </mat-date-range-input>
+        <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="range"
+        ></mat-datepicker-toggle>
+        <mat-date-range-picker #range></mat-date-range-picker>
       </mat-form-field>
     </div>
   </form>

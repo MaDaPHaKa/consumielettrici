@@ -1,0 +1,35 @@
+<mat-toolbar>
+  <div class="columns">
+    <div class="column">
+      <span class="header" [routerLink]="'/home'">Home</span>
+    </div>
+    <div class="column">
+      <span class="header" [routerLink]="'/charts'">Charts</span>
+    </div>
+    <div class="column">
+      <span class="header" [routerLink]="'/letture'">Letture</span>
+    </div>
+    <div class="column">
+      <span class="header" [routerLink]="'/aggiungilettura'"
+        >Aggiungi Lettura</span
+      >
+    </div>
+    <div class="column">
+      <span class="header" [routerLink]="'/elettrodomestici'"
+        >Elettrodomestici</span
+      >
+    </div>
+    <div class="column">
+      <span class="header" (click)="export()">Export</span>
+    </div>
+    <div class="column">
+      <span class="header" (click)="fileUpload.click()">Import</span>
+    </div>
+  </div>
+</mat-toolbar>
+<input
+  type="file"
+  class="file-input"
+  (change)="onFileSelected($event)"
+  #fileUpload
+/>

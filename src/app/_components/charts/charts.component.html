@@ -1,0 +1,41 @@
+<div class="columns is-multiline is-centered">
+  <div class="column">
+    <form [formGroup]="form">
+      <mat-form-field>
+        <mat-label>Enter a date range</mat-label>
+        <mat-date-range-input [rangePicker]="range">
+          <input
+            matStartDate
+            [formControlName]="'dal'"
+            placeholder="Start date"
+          />
+          <input matEndDate [formControlName]="'al'" placeholder="End date" />
+        </mat-date-range-input>
+        <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="range"
+        ></mat-datepicker-toggle>
+        <mat-date-range-picker #range></mat-date-range-picker>
+      </mat-form-field>
+    </form>
+    <button mat-button (click)="search()">Cerca</button>
+  </div>
+  <div class="column is-full areachart-wrapper dark">
+    <ngx-charts-bar-vertical
+      [results]="data"
+      [scheme]="'cool'"
+      [gradient]="options.gradient"
+      [xAxis]="options.showXAxis"
+      [yAxis]="options.showYAxis"
+      [legend]="options.showLegend"
+      [showXAxisLabel]="options.showXAxisLabel"
+      [showYAxisLabel]="options.showYAxisLabel"
+      [xAxisLabel]="options.xAxisLabel"
+      [yAxisLabel]="options.yAxisLabel"
+      (select)="onSelect($event)"
+      class="bar-chart"
+    >
+    </ngx-charts-bar-vertical>
+  </div>
+</div>

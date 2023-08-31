@@ -1,11 +1,16 @@
-<h1 *ngIf="lettura === undefined || lettura === null">Aggiungi Lettura</h1>
-<div>
+<div class="pt-5 pl-4">
   <form [formGroup]="form">
     <mat-form-field>
       <mat-label>Lettura</mat-label>
-      <input [formControlName]="'lettura'" matInput type="number" />
+      <input
+        [formControlName]="'lettura'"
+        matInput
+        type="number"
+        step="0.01"
+        lang="it-IT"
+      />
     </mat-form-field>
-    <mat-form-field>
+    <mat-form-field class="pl-2">
       <mat-label>Giorno</mat-label>
       <input matInput [formControlName]="'giorno'" [matDatepicker]="picker" />
       <mat-hint>DD/MM/YYYY</mat-hint>
@@ -15,6 +20,11 @@
       ></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
+    <div>
+      <mat-checkbox [formControlName]="'escludiDaMedia'"
+        >Escludi Da Media</mat-checkbox
+      >
+    </div>
   </form>
   <button mat-button [disabled]="!form.valid" (click)="salva()">Salva</button
   ><button mat-button [routerLink]="'/letture'">Indietro</button>

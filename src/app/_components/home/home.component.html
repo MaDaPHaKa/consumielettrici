@@ -1,4 +1,52 @@
-<h1>Home</h1>
+<div class="columns is-multiline is-centered home">
+  <div class="column is-full pt-5 table-container">
+    <mat-label class="is-size-4 px-4">Media: {{ media }}</mat-label>
+    <mat-label class="is-size-4 px-4">Min: {{ min }}</mat-label>
+    <mat-label class="is-size-4 px-4">Max: {{ max }}</mat-label>
+  </div>
+  <div class="column is-full table-container">
+    <section class="overflow-table-container">
+      <table
+        mat-table
+        [dataSource]="dataSource"
+        class="mat-elevation-z8"
+        multiTemplateDataRows
+      >
+        <ng-container matColumnDef="data">
+          <th mat-header-cell *matHeaderCellDef>Data</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.giorno | date }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="giorno">
+          <th mat-header-cell *matHeaderCellDef>Giorno</th>
+          <td mat-cell *matCellDef="let element">
+            {{ giornoSettimana(element.giorno) }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="consumo">
+          <th mat-header-cell *matHeaderCellDef>Consumo</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.consumo > 0 ? element.consumo : "" }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="elettrodomestici">
+          <th mat-header-cell *matHeaderCellDef>Elettrodomestici</th>
+          <td mat-cell *matCellDef="let element">
+            <app-uso-elettrodomestico
+              *ngFor="let el of element.elettrodomestici"
+              [uso]="el"
+              [nascondiPulsanti]="true"
+            ></app-uso-elettrodomestico>
+          </td>
+        </ng-container>
 
-<a mat-button [routerLink]="'/letture'">Letture</a>
-<a mat-button [routerLink]="'/elettrodomestici'">Elettrodomestici</a>
+        <tr
+          mat-header-row
+          *matHeaderRowDef="displayedColumns; sticky: true"
+        ></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </section>
+  </div>
+</div>

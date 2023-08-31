@@ -1,5 +1,19 @@
 <div *ngIf="uso">
-  {{ uso.elettrodomestico.nome }} - {{ getDurataLeggibile() }} - {{ uso.note }}
-  <button mat-button (click)="modifica()">Modifica</button>
-  <button mat-button>Elimina</button>
+  {{ uso.elettrodomestico.nome }}{{ getDurata() }}{{ getNote() }}
+  <button
+    *ngIf="!nascondiPulsanti"
+    mat-icon-button
+    class="small-icon-button"
+    (click)="modifica()"
+  >
+    <mat-icon>edit</mat-icon>
+  </button>
+  <button
+    *ngIf="!nascondiPulsanti"
+    mat-icon-button
+    class="small-icon-button"
+    (click)="elimina()"
+  >
+    <mat-icon>delete</mat-icon>
+  </button>
 </div>

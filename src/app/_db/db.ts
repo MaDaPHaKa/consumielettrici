@@ -11,13 +11,16 @@ export interface Elettrodomestico extends Identifiable {
 export interface UsoElettrodomestico extends Identifiable {
   elettrodomesticoId: number;
   note: string;
-  durata: number; //durata in millisecondi
+  ore: number;
+  minuti: number;
   giorno: Date;
 }
 
 export interface Lettura extends Identifiable {
   lettura: number;
+  consumo: number;
   giorno: Date;
+  escludiDaMedia: boolean;
 }
 
 export class AppDB extends Dexie {
