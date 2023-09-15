@@ -9,6 +9,7 @@ import * as moment from 'moment';
 import { LetturaService } from 'src/app/_services/lettura.service';
 import { SnackbarService } from 'src/app/_services/snackbar.service';
 import { ChartOptions } from 'src/app/dto/chart-options';
+import { LetturaFilterDto } from 'src/app/dto/lettura-filter-dto';
 
 @Component({
   selector: 'app-charts',
@@ -16,10 +17,11 @@ import { ChartOptions } from 'src/app/dto/chart-options';
   styleUrls: ['./charts.component.scss'],
 })
 export class ChartsComponent implements OnInit {
-  form: FormGroup = new FormGroup([]);
   data: any[] = [];
   view: [number, number] = [700, 400];
   options = new ChartOptions();
+  dal: Date | undefined;
+  al: Date | undefined;
 
   constructor(
     private lettureService: LetturaService,
@@ -33,23 +35,21 @@ export class ChartsComponent implements OnInit {
     this.initForm();
     this.options.xAxisLabel = 'Giorno';
     this.options.yAxisLabel = 'Consumo';
-    this.search();
+    const filter = new LetturaFilterDto();
+    filter.dal = this.dal;
+    filter.al = this.al;
+    this.cerca(filter);
   }
 
   initForm() {
     const oggi = moment(moment.now()).startOf('day');
     const unMeseFa = moment(moment.now()).subtract(1, 'months').startOf('day');
-
-    this.form = this.builder.group({
-      dal: new FormControl(unMeseFa.toDate()),
-      al: new FormControl(oggi.toDate()),
-    });
+    this.dal = unMeseFa.toDate();
+    this.al = oggi.toDate();
   }
 
-  search() {
-    const dal = this.form.get('dal')?.value;
-    const al = this.form.get('al')?.value;
-    this.lettureService.getLetturePerChart(dal, al).subscribe({
+  cerca(filter: LetturaFilterDto) {
+    this.lettureService.getLetturePerChart(filter.dal, filter.al).subscribe({
       next: (data) => {
         this.data = data.map((el) => {
           return {

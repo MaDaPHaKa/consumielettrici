@@ -3,15 +3,15 @@ import { MatDialog } from '@angular/material/dialog';
 import { LetturaService } from 'src/app/_services/lettura.service';
 import { SnackbarService } from 'src/app/_services/snackbar.service';
 import { UtilsService } from 'src/app/_services/utils.service';
-import { LetturaDto } from 'src/app/dto/lettura-dto';
+import { AbstractLettureSearch } from 'src/app/abstract/abstract-letture-search';
+import { LetturaFilterDto } from 'src/app/dto/lettura-filter-dto';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent {
-  dataSource: LetturaDto[] = [];
+export class HomeComponent extends AbstractLettureSearch {
   displayedColumns = ['data', 'giorno', 'consumo', 'elettrodomestici'];
   media: number = -1;
   min: number = -1;
@@ -21,13 +21,15 @@ export class HomeComponent {
     public dialog: MatDialog,
     private utils: UtilsService,
     private snackBar: SnackbarService
-  ) {}
+  ) {
+    super();
+  }
 
   ngOnInit(): void {
     this.service.getTableValues().subscribe({
       next: (data) => {
-        this.dataSource = data;
-        this.faiCalcoli();
+        this.allData = data;
+        this.cerca(new LetturaFilterDto());
       },
       error: (err) => {
         console.log('Errore load letture', err);
@@ -37,7 +39,7 @@ export class HomeComponent {
     });
   }
 
-  faiCalcoli() {
+  afterFilter(): void {
     this.dataSource.sort((a, b) => b.giorno.getTime() - a.giorno.getTime());
     if (this.dataSource.length > 0) {
       let copy = this.dataSource.slice();

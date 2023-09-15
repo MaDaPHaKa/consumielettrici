@@ -1,0 +1,19 @@
+<mat-form-field class="pr-1">
+  <mat-label>Enter a date range</mat-label>
+  <mat-date-range-input [rangePicker]="range">
+    <input matStartDate [(ngModel)]="dal" placeholder="Start date" />
+    <input matEndDate [(ngModel)]="al" placeholder="End date" />
+  </mat-date-range-input>
+  <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+  <mat-datepicker-toggle matIconSuffix [for]="range"></mat-datepicker-toggle>
+  <mat-date-range-picker #range></mat-date-range-picker>
+</mat-form-field>
+<mat-form-field class="pl-1">
+  <mat-label>Elettrodomestico</mat-label>
+  <mat-select multiple [(ngModel)]="elettrodomestico">
+    <mat-option *ngFor="let el of elett" [value]="el">
+      {{ el.nome }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+<button mat-button (click)="cerca()">Cerca</button>

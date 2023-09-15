@@ -26,6 +26,7 @@ import { UsoElettrodomesticoComponent } from './_components/uso-elettrodomestico
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { LettureFilterComponent } from './_components/letture-filter/letture-filter.component';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
     ElettrodomesticiComponent,
     NavbarComponent,
     ChartsComponent,
+    LettureFilterComponent,
   ],
   imports: [
     BrowserModule,

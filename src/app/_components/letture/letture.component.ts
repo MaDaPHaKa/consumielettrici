@@ -7,14 +7,16 @@ import {
 } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { catchError, forkJoin, of } from 'rxjs';
 import { UsoElettrodomesticoRepository } from 'src/app/_repositories/uso-elettrodomestico-repository';
 import { LetturaService } from 'src/app/_services/lettura.service';
+import { SnackbarService } from 'src/app/_services/snackbar.service';
 import { UtilsService } from 'src/app/_services/utils.service';
+import { AbstractLettureSearch } from 'src/app/abstract/abstract-letture-search';
 import { LetturaDto } from 'src/app/dto/lettura-dto';
+import { LetturaFilterDto } from 'src/app/dto/lettura-filter-dto';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { LetturaElettrodomesticiComponent } from '../lettura-elettrodomestici/lettura-elettrodomestici.component';
-import { SnackbarService } from 'src/app/_services/snackbar.service';
-import { catchError, forkJoin, of } from 'rxjs';
 
 @Component({
   selector: 'app-letture',
@@ -31,8 +33,7 @@ import { catchError, forkJoin, of } from 'rxjs';
     ]),
   ],
 })
-export class LettureComponent implements OnInit {
-  dataSource: LetturaDto[] = [];
+export class LettureComponent extends AbstractLettureSearch implements OnInit {
   displayedColumns = [
     'data',
     'giorno',
@@ -47,13 +48,15 @@ export class LettureComponent implements OnInit {
     public dialog: MatDialog,
     private utils: UtilsService,
     private snackBar: SnackbarService
-  ) {}
+  ) {
+    super();
+  }
 
   ngOnInit(): void {
     this.service.getTableValues().subscribe({
       next: (data) => {
-        this.dataSource = data;
-        this.dataSource.sort((a, b) => b.giorno.getTime() - a.giorno.getTime());
+        this.allData = data;
+        this.cerca(new LetturaFilterDto());
       },
       error: (err) => {
         console.log('Errore load letture', err);
@@ -147,5 +150,9 @@ export class LettureComponent implements OnInit {
       },
       complete: () => {},
     });
+  }
+
+  afterFilter() {
+    this.dataSource.sort((a, b) => b.giorno.getTime() - a.giorno.getTime());
   }
 }

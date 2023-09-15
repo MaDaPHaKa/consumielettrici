@@ -1,5 +1,9 @@
 <div class="columns is-centered">
   <div class="column is-full table-container">
+    <app-letture-filter
+      class="filter-full"
+      (cercaEvent)="cerca($event)"
+    ></app-letture-filter>
     <button mat-button [routerLink]="'/aggiungilettura'">Aggiungi</button>
     <button mat-button (click)="ricalcolaConsumi()">Ricalcola Consumi</button>
     <section class="overflow-table-container">
