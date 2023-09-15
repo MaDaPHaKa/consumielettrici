@@ -90,6 +90,7 @@ export class LettureComponent implements OnInit {
   espandi(element: LetturaDto) {
     element.expanded = !element.expanded;
   }
+
   aggiungiElettrodomestico(lettura: LetturaDto) {
     const dialogRef = this.dialog.open(LetturaElettrodomesticiComponent, {
       data: { lettura: lettura },
@@ -97,9 +98,7 @@ export class LettureComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        console.log(result);
         if (Array.isArray(result)) {
-          console.log('res multi:', result);
           const saves$ = result.map((el) =>
             this.usoEletRepo.save(el).pipe(
               catchError((err) => {
@@ -117,7 +116,6 @@ export class LettureComponent implements OnInit {
             },
           });
         } else {
-          console.log('res singolo:', result);
           this.usoEletRepo.save(result).subscribe({
             next: (data) => {
               this.snackBar.success('Utilizzo salvato');
@@ -135,5 +133,19 @@ export class LettureComponent implements OnInit {
 
   onUsoUpdate(event: any) {
     this.ngOnInit();
+  }
+
+  async ricalcolaConsumi() {
+    const val$ = await this.service.ricalcolaConsumi();
+    forkJoin(val$).subscribe({
+      next: (data) => {
+        this.snackBar.success('Aggiornamento consumi completato');
+      },
+      error: (err) => {
+        console.log('errore update consumi: ', err);
+        this.snackBar.error('Errore update consumi: ' + err);
+      },
+      complete: () => {},
+    });
   }
 }

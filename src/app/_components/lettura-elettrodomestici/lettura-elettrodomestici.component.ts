@@ -84,7 +84,6 @@ export class LetturaElettrodomesticiComponent implements OnInit {
     if (dal && al) {
       const usi = [];
       const giorniDiff = this.utils.getDiffGiorni(dal, al);
-      console.log(giorniDiff);
       for (let giorno = 0; giorno <= giorniDiff; giorno++) {
         const giornoDaSalvare = this.utils.aggiungiGiorni(dal, giorno);
         const uso = {
