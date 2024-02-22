@@ -51,12 +51,14 @@ export class ChartsComponent implements OnInit {
   cerca(filter: LetturaFilterDto) {
     this.lettureService.getLetturePerChart(filter.dal, filter.al).subscribe({
       next: (data) => {
-        this.data = data.map((el) => {
-          return {
-            name: el.giorno,
-            value: el.consumo ? el.consumo : 0,
-          };
-        });
+        this.data = data
+          .filter((el) => !el.escludiDaMinMax)
+          .map((el) => {
+            return {
+              name: el.giorno,
+              value: el.consumo ? el.consumo : 0,
+            };
+          });
       },
       error: (err) => {
         console.log('errore load chart: ', err);

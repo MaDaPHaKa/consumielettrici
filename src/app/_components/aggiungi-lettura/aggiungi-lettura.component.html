@@ -24,6 +24,9 @@
       <mat-checkbox [formControlName]="'escludiDaMedia'"
         >Escludi Da Media</mat-checkbox
       >
+      <mat-checkbox [formControlName]="'escludiDaMinMax'"
+        >Escludi Da MinMax</mat-checkbox
+      >
     </div>
   </form>
   <button mat-button [disabled]="!form.valid" (click)="salva()">Salva</button

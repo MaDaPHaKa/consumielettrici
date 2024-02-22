@@ -8,4 +8,5 @@ export class LetturaDto {
   expanded = false;
   consumo = -1;
   escludiDaMedia = false;
+  escludiDaMinMax = false;
 }

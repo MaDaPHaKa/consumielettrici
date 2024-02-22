@@ -91,7 +91,7 @@ export class LetturaService {
       );
       if (prevLett)
         lettura.consumo =
-          (lettura.lettura * 100 - prevLett.lettura * 100) / 100;
+        Number.parseFloat(((lettura.lettura * 100 - prevLett.lettura * 100) / 100).toFixed(2));
       if (lettura.consumo < 0) lettura.consumo = 0;
       return this.salva(lettura);
     });

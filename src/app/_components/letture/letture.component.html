@@ -42,10 +42,22 @@
             ></app-uso-elettrodomestico>
           </td>
         </ng-container>
+        <ng-container matColumnDef="consumo">
+          <th mat-header-cell *matHeaderCellDef>Consumo</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.consumo }}
+          </td>
+        </ng-container>
         <ng-container matColumnDef="escludiDaMedia">
           <th mat-header-cell *matHeaderCellDef>Media</th>
           <td mat-cell *matCellDef="let element">
             {{ !element.escludiDaMedia }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="escludiDaMinMax">
+          <th mat-header-cell *matHeaderCellDef>MinMax</th>
+          <td mat-cell *matCellDef="let element">
+            {{ !element.escludiDaMinMax }}
           </td>
         </ng-container>
         <ng-container matColumnDef="azioni">

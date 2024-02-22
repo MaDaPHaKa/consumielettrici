@@ -37,6 +37,7 @@ export class AggiungiLetturaComponent implements OnInit {
       lettura: new FormControl(this.lettura?.lettura, [Validators.required]),
       giorno: new FormControl(this.lettura?.giorno, Validators.required),
       escludiDaMedia: new FormControl(this.lettura?.escludiDaMedia),
+      escludiDaMinMax: new FormControl(this.lettura?.escludiDaMinMax),
     });
   }
 
@@ -46,6 +47,7 @@ export class AggiungiLetturaComponent implements OnInit {
       lettura: this.form.get('lettura')?.value,
       giorno: this.form.get('giorno')?.value,
       escludiDaMedia: this.form.get('escludiDaMedia')?.value,
+      escludiDaMinMax: this.form.get('escludiDaMinMax')?.value,
     } as Lettura;
     this.lettura.giorno.setHours(0, 0, 0, 0);
     const prevDay = this.utils.getGiornoPrima(this.lettura.giorno);
@@ -54,7 +56,7 @@ export class AggiungiLetturaComponent implements OnInit {
       .first();
     if (prevLett)
       this.lettura.consumo =
-        (this.lettura.lettura * 100 - prevLett.lettura * 100) / 100;
+        Number.parseFloat(((this.lettura.lettura * 100 - prevLett.lettura * 100) / 100).toFixed(2));
     if (this.lettura.consumo < 0) this.lettura.consumo = 0;
     this.service.salva(this.lettura).subscribe({
       next: (data) => {

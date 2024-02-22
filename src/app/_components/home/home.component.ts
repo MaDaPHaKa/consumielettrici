@@ -42,13 +42,12 @@ export class HomeComponent extends AbstractLettureSearch {
   afterFilter(): void {
     this.dataSource.sort((a, b) => b.giorno.getTime() - a.giorno.getTime());
     if (this.dataSource.length > 0) {
-      let copy = this.dataSource.slice();
-      copy = copy
-        .filter((el) => !el.escludiDaMedia)
+      const copy = this.dataSource.slice();
+      const perMinMax = copy
+        .filter((el) => !el.escludiDaMinMax && el.consumo > 0)
         .sort((a, b) => a.consumo - b.consumo);
-      copy = copy.filter((el) => el.consumo > 0);
-      this.max = copy[copy.length - 1].consumo;
-      this.min = copy[0].consumo;
+      this.max = perMinMax[perMinMax.length - 1].consumo;
+      this.min = perMinMax[0].consumo;
       this.media =
         copy
           .filter((el) => !el.escludiDaMedia)

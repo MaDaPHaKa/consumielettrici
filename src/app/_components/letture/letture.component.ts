@@ -39,7 +39,9 @@ export class LettureComponent extends AbstractLettureSearch implements OnInit {
     'giorno',
     'lettura',
     'elettrodomestici',
+    'consumo',
     'escludiDaMedia',
+    'escludiDaMinMax',
     'azioni',
   ];
   constructor(

@@ -21,6 +21,7 @@ export interface Lettura extends Identifiable {
   consumo: number;
   giorno: Date;
   escludiDaMedia: boolean;
+  escludiDaMinMax: boolean;
 }
 
 export class AppDB extends Dexie {
