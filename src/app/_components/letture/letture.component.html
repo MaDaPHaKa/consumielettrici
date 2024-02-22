@@ -9,7 +9,7 @@
     <section class="overflow-table-container">
       <table
         mat-table
-        [dataSource]="dataSource"
+        [dataSource]="paginated"
         class="mat-elevation-z8"
         multiTemplateDataRows
       >
@@ -124,5 +124,14 @@
         ></tr>
       </table>
     </section>
+    <mat-paginator
+      #paginator
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[5, 10, 20]"
+      [showFirstLastButtons]="true"
+      [length]="totalSize"
+      [pageIndex]="currentPage"
+    >
+    </mat-paginator>
   </div>
 </div>

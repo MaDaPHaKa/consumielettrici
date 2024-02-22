@@ -5,8 +5,10 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
 import { catchError, forkJoin, of } from 'rxjs';
 import { UsoElettrodomesticoRepository } from 'src/app/_repositories/uso-elettrodomestico-repository';
 import { LetturaService } from 'src/app/_services/lettura.service';
@@ -17,6 +19,7 @@ import { LetturaDto } from 'src/app/dto/lettura-dto';
 import { LetturaFilterDto } from 'src/app/dto/lettura-filter-dto';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { LetturaElettrodomesticiComponent } from '../lettura-elettrodomestici/lettura-elettrodomestici.component';
+import { UsoElettrodomesticoService } from 'src/app/_services/uso-elettrodomestico.service';
 
 @Component({
   selector: 'app-letture',
@@ -33,7 +36,17 @@ import { LetturaElettrodomesticiComponent } from '../lettura-elettrodomestici/le
     ]),
   ],
 })
-export class LettureComponent extends AbstractLettureSearch implements OnInit {
+export class LettureComponent
+  extends AbstractLettureSearch
+  implements OnInit, AfterViewInit
+{
+  pageSize = 20;
+  totalSize = 0;
+  currentPage = 0;
+  // paginated: LetturaDto[] = [];
+  paginated: MatTableDataSource<LetturaDto> =
+    new MatTableDataSource<LetturaDto>([]);
+  @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
   displayedColumns = [
     'data',
     'giorno',
@@ -47,6 +60,7 @@ export class LettureComponent extends AbstractLettureSearch implements OnInit {
   constructor(
     private service: LetturaService,
     private usoEletRepo: UsoElettrodomesticoRepository,
+    private usoEletService: UsoElettrodomesticoService,
     public dialog: MatDialog,
     private utils: UtilsService,
     private snackBar: SnackbarService
@@ -68,6 +82,10 @@ export class LettureComponent extends AbstractLettureSearch implements OnInit {
     });
   }
 
+  ngAfterViewInit() {
+    if (this.paginated) this.paginated.paginator = this.paginator;
+  }
+
   giornoSettimana(d: Date) {
     return this.utils.giornoSettimana(d);
   }
@@ -81,6 +99,9 @@ export class LettureComponent extends AbstractLettureSearch implements OnInit {
       if (result) {
         this.service.elimina(toDelete).subscribe({
           next: (data) => {
+            this.dataSource = this.dataSource.filter(
+              (el) => el.id !== toDelete.id
+            );
             this.snackBar.success('Lettura eliminata');
           },
           error: (err) => {
@@ -92,6 +113,7 @@ export class LettureComponent extends AbstractLettureSearch implements OnInit {
       }
     });
   }
+
   espandi(element: LetturaDto) {
     element.expanded = !element.expanded;
   }
@@ -123,13 +145,22 @@ export class LettureComponent extends AbstractLettureSearch implements OnInit {
         } else {
           this.usoEletRepo.save(result).subscribe({
             next: (data) => {
+              this.usoEletService.getByGiorno(lettura.giorno).subscribe({
+                next: (data) => {
+                  lettura.elettrodomestici = data;
+                },
+                error: (err) => {
+                  console.log('errore load utilizzo: ', err);
+                },
+                complete: () => {},
+              });
               this.snackBar.success('Utilizzo salvato');
             },
             error: (err) => {
               console.log('errore cancellazione: ', err);
               this.snackBar.error('Errore salvataggio utilizzo: ' + err);
             },
-            complete: () => this.ngOnInit(),
+            complete: () => {},
           });
         }
       }
@@ -156,5 +187,7 @@ export class LettureComponent extends AbstractLettureSearch implements OnInit {
 
   afterFilter() {
     this.dataSource.sort((a, b) => b.giorno.getTime() - a.giorno.getTime());
+    this.paginated = new MatTableDataSource(this.dataSource);
+    this.paginated.paginator = this.paginator;
   }
 }
