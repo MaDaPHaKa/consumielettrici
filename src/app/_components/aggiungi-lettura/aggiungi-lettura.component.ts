@@ -49,15 +49,6 @@ export class AggiungiLetturaComponent implements OnInit {
       escludiDaMedia: this.form.get('escludiDaMedia')?.value,
       escludiDaMinMax: this.form.get('escludiDaMinMax')?.value,
     } as Lettura;
-    this.lettura.giorno.setHours(0, 0, 0, 0);
-    const prevDay = this.utils.getGiornoPrima(this.lettura.giorno);
-    const prevLett = await this.service.repository.table
-      .where({ giorno: prevDay })
-      .first();
-    if (prevLett)
-      this.lettura.consumo =
-        Number.parseFloat(((this.lettura.lettura * 100 - prevLett.lettura * 100) / 100).toFixed(2));
-    if (this.lettura.consumo < 0) this.lettura.consumo = 0;
     this.service.salva(this.lettura).subscribe({
       next: (data) => {
         this.snackBar.success('Lettura salvata.');
@@ -66,7 +57,7 @@ export class AggiungiLetturaComponent implements OnInit {
         console.log('errore salvataggio lettura: ', err);
         this.snackBar.error('Errore salvataggio lettura: ' + err);
       },
-      complete: () => {},
+      complete: () => { },
     });
   }
 }

@@ -7,6 +7,7 @@ import {
   map,
   mergeMap,
   of,
+  switchMap,
 } from 'rxjs';
 import { Lettura } from '../_db/db';
 import { LetturaRepository } from '../_repositories/lettura-repository';
@@ -23,7 +24,7 @@ export class LetturaService {
     public repository: LetturaRepository,
     private usoService: UsoElettrodomesticoService,
     private utils: UtilsService
-  ) {}
+  ) { }
 
   getTableValues(): Observable<LetturaDto[]> {
     return this.repository.getAll().pipe(
@@ -75,7 +76,15 @@ export class LetturaService {
   }
 
   salva(lettura: Lettura): Observable<number> {
-    return this.repository.save(lettura);
+    lettura.giorno.setHours(0, 0, 0, 0);
+    const prevDay = this.utils.getGiornoPrima(lettura.giorno);
+    return from(this.repository.table
+      .where({ giorno: prevDay })
+      .first()).pipe(switchMap(prevLett => {
+        lettura.consumo = this.calcolaConsumo(lettura, prevLett);
+        return this.repository.save(lettura);
+      }));
+
   }
 
   elimina(lettura: Lettura): Observable<void> {
@@ -89,11 +98,26 @@ export class LetturaService {
       const prevLett = letture.find(
         (el) => el.giorno.getTime() === prevDay.getTime()
       );
-      if (prevLett)
-        lettura.consumo =
-        Number.parseFloat(((lettura.lettura * 100 - prevLett.lettura * 100) / 100).toFixed(2));
-      if (lettura.consumo < 0) lettura.consumo = 0;
+      lettura.consumo = this.calcolaConsumo(lettura, prevLett);
       return this.salva(lettura);
     });
+  }
+
+  private calcolaConsumo(currLett: Lettura, prevLett: Lettura | undefined | null): number {
+    let consumo = 0;
+    if (prevLett) {
+      const lastBaseline = 1502.1;
+      // lettura.giorno.setHours(0, 0, 0, 0);
+      const dateBaseLine = new Date();
+      dateBaseLine.setHours(0, 0, 0, 0);
+      dateBaseLine.setMonth(1);
+      dateBaseLine.setDate(2);
+      dateBaseLine.setFullYear(2024);
+      const currLet = currLett.giorno > dateBaseLine ? currLett.lettura + lastBaseline : currLett.lettura;
+      const prevLet = prevLett.giorno > dateBaseLine ? prevLett.lettura + lastBaseline : prevLett.lettura;
+      consumo = Number.parseFloat(((currLet * 100 - prevLet * 100) / 100).toFixed(2));
+    }
+    if (consumo < 0) return 0;
+    return consumo;
   }
 }
