@@ -107,12 +107,11 @@ export class LetturaService {
     let consumo = 0;
     if (prevLett) {
       const lastBaseline = 1502.1;
-      // lettura.giorno.setHours(0, 0, 0, 0);
       const dateBaseLine = new Date();
-      dateBaseLine.setHours(0, 0, 0, 0);
-      dateBaseLine.setMonth(1);
-      dateBaseLine.setDate(2);
       dateBaseLine.setFullYear(2024);
+      dateBaseLine.setDate(29);
+      dateBaseLine.setMonth(1);
+      dateBaseLine.setHours(0, 0, 0, 0);
       const currLet = currLett.giorno > dateBaseLine ? currLett.lettura + lastBaseline : currLett.lettura;
       const prevLet = prevLett.giorno > dateBaseLine ? prevLett.lettura + lastBaseline : prevLett.lettura;
       consumo = Number.parseFloat(((currLet * 100 - prevLet * 100) / 100).toFixed(2));
