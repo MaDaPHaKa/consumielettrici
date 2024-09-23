@@ -17,6 +17,10 @@ export abstract class BaseRepository<T extends Identifiable> {
     return from(this.table.get(id));
   }
 
+  orderedByGiorno(): Observable<T[]> {
+    return from(this.table.orderBy('giorno').toArray());
+  }
+
   getByGiorno(giornoVal: Date): Observable<T[]> {
     return from(this.table.where('giorno').equals(giornoVal).toArray());
   }

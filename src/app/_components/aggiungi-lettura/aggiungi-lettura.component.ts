@@ -5,7 +5,6 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Lettura } from 'src/app/_db/db';
 import { LetturaService } from 'src/app/_services/lettura.service';
 import { SnackbarService } from 'src/app/_services/snackbar.service';
@@ -21,10 +20,10 @@ export class AggiungiLetturaComponent implements OnInit {
   lettura: Lettura | undefined;
   form: FormGroup = new FormGroup([]);
   constructor(
-    private service: LetturaService,
-    private builder: FormBuilder,
+    protected service: LetturaService,
+    protected builder: FormBuilder,
     private snackBar: SnackbarService,
-    private utils: UtilsService
+    protected utils: UtilsService
   ) {
     this.form = this.builder.group({
       lettura: new FormControl(this.lettura?.lettura, [Validators.required]),
@@ -41,7 +40,7 @@ export class AggiungiLetturaComponent implements OnInit {
     });
   }
 
-  async salva() {
+  salva() {
     this.lettura = {
       id: this.lettura?.id,
       lettura: this.form.get('lettura')?.value,
@@ -49,6 +48,7 @@ export class AggiungiLetturaComponent implements OnInit {
       escludiDaMedia: this.form.get('escludiDaMedia')?.value,
       escludiDaMinMax: this.form.get('escludiDaMinMax')?.value,
     } as Lettura;
+
     this.service.salva(this.lettura).subscribe({
       next: (data) => {
         this.snackBar.success('Lettura salvata.');
@@ -57,7 +57,7 @@ export class AggiungiLetturaComponent implements OnInit {
         console.log('errore salvataggio lettura: ', err);
         this.snackBar.error('Errore salvataggio lettura: ' + err);
       },
-      complete: () => { },
+      complete: () => {},
     });
   }
 }
