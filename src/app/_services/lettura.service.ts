@@ -6,6 +6,7 @@ import { LetturaRepository } from '../_repositories/lettura-repository';
 import { LetturaDto } from '../dto/lettura-dto';
 import { UsoElettrodomesticoService } from './uso-elettrodomestico.service';
 import { UtilsService } from './utils.service';
+import { CambioAnno } from '../dto/cambio-anno';
 
 @Injectable({
   providedIn: 'root',
@@ -99,19 +100,30 @@ export class LetturaService {
   ): number {
     let consumo = 0;
     if (prevLett) {
-      const lastBaseline = 1502.1;
-      const dateBaseLine = new Date();
-      dateBaseLine.setFullYear(2024);
-      dateBaseLine.setDate(29);
-      dateBaseLine.setMonth(1);
-      dateBaseLine.setHours(0, 0, 0, 0);
+      const firstBaseLine = new Date();
+      firstBaseLine.setFullYear(2024);
+      firstBaseLine.setDate(29);
+      firstBaseLine.setMonth(1);
+      firstBaseLine.setHours(0, 0, 0, 0);
+      const baseLines = [
+        new CambioAnno(1502.1, 2024, firstBaseLine),
+        new CambioAnno(1317.368, 2025),
+      ];
+      const currCamb = this.recuperaCambioAnno(
+        baseLines,
+        currLett.giorno.getTime()
+      );
+      console.log('curr: ', currLett);
+      console.log('base: ', currCamb);
+      const baseLineDate = currCamb.dateBaseLine;
+      const baseLineValue = currCamb.lastBaseline;
       const currLet =
-        currLett.giorno > dateBaseLine
-          ? currLett.lettura + lastBaseline
+        currLett.giorno > baseLineDate
+          ? currLett.lettura + baseLineValue
           : currLett.lettura;
       const prevLet =
-        prevLett.giorno > dateBaseLine
-          ? prevLett.lettura + lastBaseline
+        prevLett.giorno > baseLineDate
+          ? prevLett.lettura + baseLineValue
           : prevLett.lettura;
       consumo = Number.parseFloat(
         ((currLet * 100 - prevLet * 100) / 100).toFixed(2)
@@ -119,5 +131,22 @@ export class LetturaService {
     }
     if (consumo < 0) return 0;
     return consumo;
+  }
+
+  private recuperaCambioAnno(
+    baseLines: CambioAnno[],
+    current: number
+  ): CambioAnno {
+    let cambio: CambioAnno = baseLines[0];
+    if (current <= cambio.dateBaseLine.getTime()) return cambio;
+    baseLines.forEach((val) => {
+      if (
+        (current >= cambio.dateBaseLine.getTime() &&
+          current < val.dateBaseLine.getTime()) ||
+        current >= val.dateBaseLine.getTime()
+      )
+        cambio = val;
+    });
+    return cambio;
   }
 }

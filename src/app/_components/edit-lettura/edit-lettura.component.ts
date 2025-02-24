@@ -31,12 +31,8 @@ export class EditLetturaComponent extends AggiungiLetturaComponent {
   override salva() {
     const lettura = this.form.get('lettura')?.value;
     const consumo = this.form.get('consumo')?.value;
-    console.log('lettura: ', lettura);
-    console.log('consumo: ', consumo);
-    console.log('letturaPrevG: ', this.letturaPrevG);
     if (lettura === 0 && consumo !== 0) {
       this.form.get('lettura')?.setValue(consumo + this.letturaPrevG);
-      console.log('entrato: ', consumo + this.letturaPrevG);
     }
 
     super.salva();
