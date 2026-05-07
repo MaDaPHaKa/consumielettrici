@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { liveQuery } from 'dexie';
-import { Observable, from, map } from 'rxjs';
+import { Observable, forkJoin, from, map, switchMap } from 'rxjs';
 import { CambioAnno, Lettura, db } from '../_db/db';
 import { CambioAnnoRepository } from '../_repositories/cambio-anno-repository';
 
@@ -65,27 +65,28 @@ export class CambioAnnoService {
    * baseline precedente + ultima lettura registrata <= dateBaseLine.
    * Ritorna oggetto pronto per salva (id assente).
    */
-  async proponiNuovoAnno(
-    anno: number,
-    dateBaseLine: Date
-  ): Promise<CambioAnno> {
+  proponiNuovoAnno(anno: number, dateBaseLine: Date): Observable<CambioAnno> {
     dateBaseLine.setHours(0, 0, 0, 0);
-    const all = await this.repository.table
-      .orderBy('dateBaseLine')
-      .toArray();
-    const prev = this.recupera(all, dateBaseLine.getTime());
-    const ultima = await db.letture
-      .where('giorno')
-      .belowOrEqual(dateBaseLine)
-      .reverse()
-      .sortBy('giorno');
-    const ultimaLettura: Lettura | undefined = ultima[0];
-    const proposed =
-      (prev?.lastBaseline ?? 0) + (ultimaLettura?.lettura ?? 0);
-    return {
-      anno,
-      lastBaseline: Number.parseFloat(proposed.toFixed(3)),
-      dateBaseLine,
-    };
+    const all$ = from(this.repository.table.orderBy('dateBaseLine').toArray());
+    const ultima$ = from(
+      db.letture
+        .where('giorno')
+        .belowOrEqual(dateBaseLine)
+        .reverse()
+        .sortBy('giorno')
+    );
+    return forkJoin([all$, ultima$]).pipe(
+      map(([all, ultima]) => {
+        const prev = this.recupera(all, dateBaseLine.getTime());
+        const ultimaLettura: Lettura | undefined = ultima[0];
+        const proposed =
+          (prev?.lastBaseline ?? 0) + (ultimaLettura?.lettura ?? 0);
+        return {
+          anno,
+          lastBaseline: Number.parseFloat(proposed.toFixed(3)),
+          dateBaseLine,
+        };
+      })
+    );
   }
 }

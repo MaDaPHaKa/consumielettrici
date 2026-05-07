@@ -1,11 +1,22 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
   FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { CambioAnno } from 'src/app/_db/db';
 import { CambioAnnoService } from 'src/app/_services/cambio-anno.service';
 import { SnackbarService } from 'src/app/_services/snackbar.service';
@@ -15,22 +26,31 @@ interface DialogData {
 }
 
 @Component({
-    selector: 'app-cambio-anno-dialog',
-    templateUrl: './cambio-anno-dialog.component.html',
-    styleUrls: ['./cambio-anno-dialog.component.scss'],
-    standalone: false
+  selector: 'app-cambio-anno-dialog',
+  templateUrl: './cambio-anno-dialog.component.html',
+  styleUrls: ['./cambio-anno-dialog.component.scss'],
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatDatepickerModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+  ],
 })
 export class CambioAnnoDialogComponent implements OnInit {
+  private readonly builder = inject(FormBuilder);
+  private readonly service = inject(CambioAnnoService);
+  private readonly snackBar = inject(SnackbarService);
+  private readonly dialogRef = inject(
+    MatDialogRef<CambioAnnoDialogComponent>
+  );
+  readonly data = inject<DialogData>(MAT_DIALOG_DATA);
+
   form: FormGroup = new FormGroup([]);
   ricalcolaConsumi = true;
-
-  constructor(
-    private builder: FormBuilder,
-    private service: CambioAnnoService,
-    private snackBar: SnackbarService,
-    private dialogRef: MatDialogRef<CambioAnnoDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: DialogData
-  ) {}
 
   ngOnInit(): void {
     const c = this.data.cambio;

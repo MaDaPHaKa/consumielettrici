@@ -1,41 +1,60 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { Elettrodomestico, UsoElettrodomestico } from 'src/app/_db/db';
 import { ElettrodomesticoRepository } from 'src/app/_repositories/elettrodomestico-repository';
 import { SnackbarService } from 'src/app/_services/snackbar.service';
+import { UtilsService } from 'src/app/_services/utils.service';
 import { LetturaDto } from 'src/app/dto/lettura-dto';
 import { LetturaElettrodomesticoDto } from 'src/app/dto/lettura-elettrodomestico-dto';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
-import { UtilsService } from 'src/app/_services/utils.service';
 
 @Component({
-    selector: 'app-lettura-elettrodomestici',
-    templateUrl: './lettura-elettrodomestici.component.html',
-    styleUrls: ['./lettura-elettrodomestici.component.scss'],
-    standalone: false
+  selector: 'app-lettura-elettrodomestici',
+  templateUrl: './lettura-elettrodomestici.component.html',
+  styleUrls: ['./lettura-elettrodomestici.component.scss'],
+  imports: [
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatDatepickerModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+  ],
 })
 export class LetturaElettrodomesticiComponent implements OnInit {
-  uso: LetturaElettrodomesticoDto | undefined;
+  readonly dialogRef = inject(MatDialogRef<ConfirmDialogComponent>);
+  readonly data = inject<{
+    lettura: LetturaDto;
+    uso: LetturaElettrodomesticoDto;
+  }>(MAT_DIALOG_DATA);
+  private readonly builder = inject(FormBuilder);
+  private readonly elettrRepo = inject(ElettrodomesticoRepository);
+  private readonly snackBar = inject(SnackbarService);
+  private readonly utils = inject(UtilsService);
+
+  uso: LetturaElettrodomesticoDto | undefined = this.data.uso;
   form: FormGroup = new FormGroup([]);
   elett: Elettrodomestico[] = [];
-  lettura: LetturaDto;
-  constructor(
-    public dialogRef: MatDialogRef<ConfirmDialogComponent>,
-    @Inject(MAT_DIALOG_DATA)
-    public data: { lettura: LetturaDto; uso: LetturaElettrodomesticoDto },
-    private builder: FormBuilder,
-    private elettrRepo: ElettrodomesticoRepository,
-    private snackBar: SnackbarService,
-    private utils: UtilsService
-  ) {
-    this.lettura = data.lettura;
-    this.uso = data.uso;
+  lettura: LetturaDto = this.data.lettura;
+
+  constructor() {
     this.initForm();
   }
 
@@ -44,10 +63,8 @@ export class LetturaElettrodomesticiComponent implements OnInit {
       next: (data) =>
         (this.elett = data.sort((a, b) => a.nome.localeCompare(b.nome))),
       error: (err) => {
-        console.log('errore load: ', err);
         this.snackBar.error('Errore caricamento elettrodomestici: ' + err);
       },
-      complete: () => {},
     });
     this.initForm();
   }
@@ -110,6 +127,7 @@ export class LetturaElettrodomesticiComponent implements OnInit {
       this.dialogRef.close(uso);
     }
   }
+
   annulla() {
     this.dialogRef.close();
   }

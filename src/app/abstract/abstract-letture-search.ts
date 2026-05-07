@@ -1,6 +1,11 @@
-import * as moment from 'moment';
 import { LetturaDto } from '../dto/lettura-dto';
 import { LetturaFilterDto } from '../dto/lettura-filter-dto';
+
+function toDay(d: Date | string): number {
+  const x = new Date(d);
+  x.setHours(0, 0, 0, 0);
+  return x.getTime();
+}
 
 export abstract class AbstractLettureSearch {
   allData: LetturaDto[] = [];
@@ -26,13 +31,9 @@ export abstract class AbstractLettureSearch {
             filter.elettrodomestico.map((el2) => el2.id).includes(el)
           ).length > 0;
       const dal =
-        !filter ||
-        !filter.dal ||
-        moment(lettura.giorno).isSameOrAfter(moment(filter.dal));
+        !filter || !filter.dal || toDay(lettura.giorno) >= toDay(filter.dal);
       const al =
-        !filter ||
-        !filter.al ||
-        moment(lettura.giorno).isSameOrBefore(moment(filter.al));
+        !filter || !filter.al || toDay(lettura.giorno) <= toDay(filter.al);
       return elettrodomestico && dal && al;
     });
   }

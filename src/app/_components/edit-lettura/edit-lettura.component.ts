@@ -1,15 +1,27 @@
 import { Component, inject } from '@angular/core';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FormControl, Validators } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { Lettura } from 'src/app/_db/db';
 import { CambioAnnoService } from 'src/app/_services/cambio-anno.service';
 import { AggiungiLetturaComponent } from '../aggiungi-lettura/aggiungi-lettura.component';
 
 @Component({
-    selector: 'app-edit-lettura',
-    templateUrl: './edit-lettura.component.html',
-    styleUrls: ['./edit-lettura.component.scss'],
-    standalone: false
+  selector: 'app-edit-lettura',
+  templateUrl: './edit-lettura.component.html',
+  styleUrls: ['./edit-lettura.component.scss'],
+  imports: [
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatInputModule,
+  ],
 })
 export class EditLetturaComponent extends AggiungiLetturaComponent {
   readonly dialogRef = inject(MatDialogRef<EditLetturaComponent>);
@@ -27,16 +39,16 @@ export class EditLetturaComponent extends AggiungiLetturaComponent {
       escludiDaMedia: new FormControl(this.lettura?.escludiDaMedia),
       escludiDaMinMax: new FormControl(this.lettura?.escludiDaMinMax),
     });
-    const giornoPrima = this.utils.getGiornoPrima(this.lettura.giorno);
-    this.cambioAnnoService.getForGiorno(this.lettura.giorno).subscribe({
+    const giornoPrima = this.utils.getGiornoPrima(this.lettura!.giorno);
+    this.cambioAnnoService.getForGiorno(this.lettura!.giorno).subscribe({
       next: (currCamb) => {
         this.giornoCambioBaseline =
           currCamb.dateBaseLine.toUTCString() === giornoPrima.toUTCString();
       },
     });
-    this.service.repository
-      .getByGiorno(giornoPrima)
-      .subscribe({ next: (data) => (this.letturaPrevG = data[0]?.lettura ?? 0) });
+    this.service.repository.getByGiorno(giornoPrima).subscribe({
+      next: (data) => (this.letturaPrevG = data[0]?.lettura ?? 0),
+    });
   }
 
   override salva() {

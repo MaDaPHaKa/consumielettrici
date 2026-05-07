@@ -1,33 +1,49 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
   FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { CambioAnno } from 'src/app/_db/db';
 import { CambioAnnoService } from 'src/app/_services/cambio-anno.service';
 import { SnackbarService } from 'src/app/_services/snackbar.service';
 
 @Component({
-    selector: 'app-nuovo-anno-dialog',
-    templateUrl: './nuovo-anno-dialog.component.html',
-    styleUrls: ['./nuovo-anno-dialog.component.scss'],
-    standalone: false
+  selector: 'app-nuovo-anno-dialog',
+  templateUrl: './nuovo-anno-dialog.component.html',
+  styleUrls: ['./nuovo-anno-dialog.component.scss'],
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatDatepickerModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+  ],
 })
 export class NuovoAnnoDialogComponent implements OnInit {
+  private readonly builder = inject(FormBuilder);
+  private readonly service = inject(CambioAnnoService);
+  private readonly snackBar = inject(SnackbarService);
+  private readonly dialogRef = inject(
+    MatDialogRef<NuovoAnnoDialogComponent>
+  );
+
   form: FormGroup = new FormGroup([]);
   override = false;
   proposed = 0;
   ricalcolaConsumi = true;
-
-  constructor(
-    private builder: FormBuilder,
-    private service: CambioAnnoService,
-    private snackBar: SnackbarService,
-    private dialogRef: MatDialogRef<NuovoAnnoDialogComponent>
-  ) {}
 
   ngOnInit(): void {
     const annoDefault = new Date().getFullYear() + 1;
@@ -42,7 +58,9 @@ export class NuovoAnnoDialogComponent implements OnInit {
       note: new FormControl(''),
     });
     this.ricalcolaProposta();
-    this.form.get('anno')?.valueChanges.subscribe(() => this.ricalcolaProposta());
+    this.form
+      .get('anno')
+      ?.valueChanges.subscribe(() => this.ricalcolaProposta());
     this.form
       .get('dateBaseLine')
       ?.valueChanges.subscribe(() => this.ricalcolaProposta());
@@ -52,7 +70,7 @@ export class NuovoAnnoDialogComponent implements OnInit {
     const anno = this.form.get('anno')?.value;
     const data = this.form.get('dateBaseLine')?.value;
     if (!anno || !data) return;
-    this.service.proponiNuovoAnno(anno, new Date(data)).then((c) => {
+    this.service.proponiNuovoAnno(anno, new Date(data)).subscribe((c) => {
       this.proposed = c.lastBaseline;
       if (!this.override)
         this.form.get('lastBaseline')?.setValue(c.lastBaseline);

@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 import { UsoElettrodomesticoComponent } from './uso-elettrodomestico.component';
 
@@ -8,7 +9,8 @@ describe('UsoElettrodomesticoComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [UsoElettrodomesticoComponent]
+      imports: [UsoElettrodomesticoComponent],
+      providers: [provideAnimations()],
     });
     fixture = TestBed.createComponent(UsoElettrodomesticoComponent);
     component = fixture.componentInstance;

@@ -1,4 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideRouter } from '@angular/router';
+import { provideNativeDateAdapter } from '@angular/material/core';
 
 import { AggiungiLetturaComponent } from './aggiungi-lettura.component';
 
@@ -8,7 +11,12 @@ describe('AggiungiLetturaComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [AggiungiLetturaComponent]
+      imports: [AggiungiLetturaComponent],
+      providers: [
+        provideAnimations(),
+        provideRouter([]),
+        provideNativeDateAdapter(),
+      ],
     });
     fixture = TestBed.createComponent(AggiungiLetturaComponent);
     component = fixture.componentInstance;

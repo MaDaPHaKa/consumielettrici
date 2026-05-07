@@ -1,5 +1,7 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { UsoElettrodomesticoRepository } from 'src/app/_repositories/uso-elettrodomestico-repository';
 import { SnackbarService } from 'src/app/_services/snackbar.service';
 import { LetturaElettrodomesticoDto } from 'src/app/dto/lettura-elettrodomestico-dto';
@@ -7,56 +9,52 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
 import { LetturaElettrodomesticiComponent } from '../lettura-elettrodomestici/lettura-elettrodomestici.component';
 
 @Component({
-    selector: 'app-uso-elettrodomestico',
-    templateUrl: './uso-elettrodomestico.component.html',
-    styleUrls: ['./uso-elettrodomestico.component.scss'],
-    standalone: false
+  selector: 'app-uso-elettrodomestico',
+  templateUrl: './uso-elettrodomestico.component.html',
+  styleUrls: ['./uso-elettrodomestico.component.scss'],
+  imports: [MatButtonModule, MatIconModule],
 })
 export class UsoElettrodomesticoComponent {
-  @Input()
-  uso: LetturaElettrodomesticoDto | undefined;
-  @Input()
-  nascondiPulsanti = false;
-  @Output()
-  modified: EventEmitter<void> = new EventEmitter();
-  constructor(
-    private usoEletRepo: UsoElettrodomesticoRepository,
-    public dialog: MatDialog,
-    private snackBar: SnackbarService
-  ) {}
+  private readonly usoEletRepo = inject(UsoElettrodomesticoRepository);
+  private readonly dialog = inject(MatDialog);
+  private readonly snackBar = inject(SnackbarService);
+
+  readonly uso = input<LetturaElettrodomesticoDto | undefined>(undefined);
+  readonly nascondiPulsanti = input(false);
+  readonly modified = output<void>();
 
   getNote(): string {
-    if (this.uso?.note && this.uso.note.length > 0) return ' ' + this.uso.note;
+    const u = this.uso();
+    if (u?.note && u.note.length > 0) return ' ' + u.note;
     return '';
   }
 
   getDurata(): string {
+    const u = this.uso();
     let durata = '';
-    if (this.uso?.ore) durata += this.uso?.ore + 'h';
-    if (this.uso?.minuti)
-      durata += (durata.length > 0 ? ' ' : '') + this.uso?.minuti + 'm';
+    if (u?.ore) durata += u.ore + 'h';
+    if (u?.minuti) durata += (durata.length > 0 ? ' ' : '') + u.minuti + 'm';
     if (durata.length > 0) durata = ' (' + durata + ')';
     return durata;
   }
 
   modifica() {
-    if (this.uso) {
+    const u = this.uso();
+    if (u) {
       const dialogRef = this.dialog.open(LetturaElettrodomesticiComponent, {
-        data: { uso: this.uso },
+        data: { uso: u },
       });
 
       dialogRef.afterClosed().subscribe((result) => {
         if (result) {
           this.usoEletRepo.save(result).subscribe({
-            next: (data) => {
+            next: () => {
               this.snackBar.success('Uso modificato');
               this.modified.emit();
             },
             error: (err) => {
-              console.log('errore update: ', err);
               this.snackBar.error('Errore modifica uso: ' + err);
             },
-            complete: () => {},
           });
         }
       });
@@ -71,13 +69,12 @@ export class UsoElettrodomesticoComponent {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result && this.uso) {
-        this.usoEletRepo.deleteById(this.uso.id).subscribe({
-          next: (data) => {
+      const u = this.uso();
+      if (result && u) {
+        this.usoEletRepo.deleteById(u.id).subscribe({
+          next: () => {
             this.modified.emit();
           },
-          error: (err) => console.log('errore update: ', err),
-          complete: () => {},
         });
       }
     });

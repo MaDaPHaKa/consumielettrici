@@ -1,27 +1,34 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatDialog } from '@angular/material/dialog';
+import { RouterLink } from '@angular/router';
 import { exportDB, importInto } from 'dexie-export-import';
 import * as FileSaver from 'file-saver-es';
-import { db } from 'src/app/_db/db';
-import { SEED_CAMBI_ANNO } from 'src/app/_db/db';
+import { EMPTY, Observable, from, switchMap } from 'rxjs';
+import { db, SEED_CAMBI_ANNO } from 'src/app/_db/db';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { SnackbarService } from 'src/app/_services/snackbar.service';
 
 @Component({
-    selector: 'app-navbar',
-    templateUrl: './navbar.component.html',
-    styleUrls: ['./navbar.component.scss'],
-    standalone: false
+  selector: 'app-navbar',
+  templateUrl: './navbar.component.html',
+  styleUrls: ['./navbar.component.scss'],
+  imports: [MatToolbarModule, RouterLink],
 })
 export class NavbarComponent {
+  private readonly dialog = inject(MatDialog);
+  private readonly snackBar = inject(SnackbarService);
+
   importFile: File | null = null;
 
-  constructor(public dialog: MatDialog, private snackBar: SnackbarService) {}
-
-  async export() {
-    const exportFile = await exportDB(db);
-    const file = new File([exportFile], 'consumi.json');
-    FileSaver.saveAs(file);
+  export() {
+    from(exportDB(db)).subscribe({
+      next: (exportFile) => {
+        const file = new File([exportFile], 'consumi.json');
+        FileSaver.saveAs(file);
+      },
+      error: (err) => this.snackBar.error('Errore export: ' + err),
+    });
   }
 
   onFileSelected(event: Event) {
@@ -44,22 +51,34 @@ export class NavbarComponent {
     }
   }
 
-  async importa() {
-    if (this.importFile) {
-      await importInto(db, this.importFile, {
+  importa() {
+    if (!this.importFile) return;
+    from(
+      importInto(db, this.importFile, {
         clearTablesBeforeImport: true,
         acceptVersionDiff: true,
+      })
+    )
+      .pipe(switchMap(() => this.seedCambiAnnoIfEmpty()))
+      .subscribe({
+        next: () => this.snackBar.success('Import completato.'),
+        error: (err) => this.snackBar.error('Errore import: ' + err),
       });
-      await this.seedCambiAnnoIfEmpty();
-      this.snackBar.success('Import completato.');
-    }
   }
 
-  private async seedCambiAnnoIfEmpty() {
-    const count = await db.cambiAnno.count();
-    if (count > 0) return;
-    await db.cambiAnno.bulkAdd(
-      SEED_CAMBI_ANNO.map((c) => ({ ...c, note: 'Seed post-import (backup v3)' }))
+  private seedCambiAnnoIfEmpty(): Observable<unknown> {
+    return from(db.cambiAnno.count()).pipe(
+      switchMap((count) => {
+        if (count > 0) return EMPTY;
+        return from(
+          db.cambiAnno.bulkAdd(
+            SEED_CAMBI_ANNO.map((c) => ({
+              ...c,
+              note: 'Seed post-import (backup v3)',
+            }))
+          )
+        );
+      })
     );
   }
 }

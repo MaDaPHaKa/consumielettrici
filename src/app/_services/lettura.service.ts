@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { liveQuery } from 'dexie';
-import { Observable, forkJoin, from, map, mergeMap, switchMap } from 'rxjs';
+import { Observable, forkJoin, from, map, mergeMap, of, switchMap } from 'rxjs';
 import { CambioAnno, Lettura } from '../_db/db';
 import { LetturaRepository } from '../_repositories/lettura-repository';
 import { LetturaDto } from '../dto/lettura-dto';
@@ -87,20 +87,25 @@ export class LetturaService {
     return this.repository.deleteByEntity(lettura);
   }
 
-  async ricalcolaConsumi(): Promise<Observable<number>[]> {
-    const letture = await this.repository.table.toArray();
-    return letture.map((lettura) => {
-      const prevDay = this.utils.getGiornoPrima(lettura.giorno);
-      const prevLett = letture.find(
-        (el) => el.giorno.getTime() === prevDay.getTime()
-      );
-      return this.cambioAnnoService.getForGiorno(lettura.giorno).pipe(
-        switchMap((cambio) => {
-          lettura.consumo = this.calcolaConsumo(lettura, prevLett, cambio);
-          return this.repository.save(lettura);
-        })
-      );
-    });
+  ricalcolaConsumi(): Observable<number[]> {
+    return from(this.repository.table.toArray()).pipe(
+      switchMap((letture) => {
+        if (letture.length === 0) return of([] as number[]);
+        const saves$ = letture.map((lettura) => {
+          const prevDay = this.utils.getGiornoPrima(lettura.giorno);
+          const prevLett = letture.find(
+            (el) => el.giorno.getTime() === prevDay.getTime()
+          );
+          return this.cambioAnnoService.getForGiorno(lettura.giorno).pipe(
+            switchMap((cambio) => {
+              lettura.consumo = this.calcolaConsumo(lettura, prevLett, cambio);
+              return this.repository.save(lettura);
+            })
+          );
+        });
+        return forkJoin(saves$);
+      })
+    );
   }
 
   private calcolaConsumo(

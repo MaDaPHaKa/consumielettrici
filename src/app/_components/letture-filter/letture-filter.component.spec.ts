@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideNativeDateAdapter } from '@angular/material/core';
 
 import { LettureFilterComponent } from './letture-filter.component';
 
@@ -8,7 +10,8 @@ describe('LettureFilterComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [LettureFilterComponent]
+      imports: [LettureFilterComponent],
+      providers: [provideAnimations(), provideNativeDateAdapter()],
     });
     fixture = TestBed.createComponent(LettureFilterComponent);
     component = fixture.componentInstance;

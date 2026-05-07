@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideRouter } from '@angular/router';
 
 import { NavbarComponent } from './navbar.component';
 
@@ -8,7 +10,8 @@ describe('NavbarComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [NavbarComponent]
+      imports: [NavbarComponent],
+      providers: [provideAnimations(), provideRouter([])],
     });
     fixture = TestBed.createComponent(NavbarComponent);
     component = fixture.componentInstance;

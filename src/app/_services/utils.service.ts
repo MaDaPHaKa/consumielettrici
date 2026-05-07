@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import moment from 'moment';
+
+const MS_PER_DAY = 86400000;
 
 @Injectable({
   providedIn: 'root',
@@ -14,20 +15,20 @@ export class UtilsService {
   }
 
   getGiornoPrima(d: Date): Date {
-    const val = moment(d);
-    val.subtract(1, 'days');
-    return val.toDate();
+    return this.aggiungiGiorni(d, -1);
   }
 
   aggiungiGiorni(d: Date, giorni: number): Date {
-    const val = moment(d);
-    val.add(giorni, 'days');
-    return val.toDate();
+    const val = new Date(d);
+    val.setDate(val.getDate() + giorni);
+    return val;
   }
 
   getDiffGiorni(start: Date, end: Date): number {
-    const valStart = moment(start);
-    const valEnd = moment(end);
-    return valEnd.diff(valStart, 'days');
+    const s = new Date(start);
+    const e = new Date(end);
+    s.setHours(0, 0, 0, 0);
+    e.setHours(0, 0, 0, 0);
+    return Math.round((e.getTime() - s.getTime()) / MS_PER_DAY);
   }
 }

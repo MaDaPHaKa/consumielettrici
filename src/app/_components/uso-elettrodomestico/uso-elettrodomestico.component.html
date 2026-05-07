@@ -1,7 +1,7 @@
-@if (uso) {
+@if (uso(); as u) {
   <div>
-    {{ uso.elettrodomestico.nome }}{{ getDurata() }}{{ getNote() }}
-    @if (!nascondiPulsanti) {
+    {{ u.elettrodomestico.nome }}{{ getDurata() }}{{ getNote() }}
+    @if (!nascondiPulsanti()) {
       <button
         mat-icon-button
         class="small-icon-button"
@@ -10,7 +10,7 @@
         <mat-icon>edit</mat-icon>
       </button>
     }
-    @if (!nascondiPulsanti) {
+    @if (!nascondiPulsanti()) {
       <button
         mat-icon-button
         class="small-icon-button"

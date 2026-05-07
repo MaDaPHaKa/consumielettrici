@@ -5,41 +5,70 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  AfterViewInit,
+  Component,
+  inject,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { catchError, forkJoin, of } from 'rxjs';
+import { Lettura } from 'src/app/_db/db';
 import { UsoElettrodomesticoRepository } from 'src/app/_repositories/uso-elettrodomestico-repository';
 import { LetturaService } from 'src/app/_services/lettura.service';
 import { SnackbarService } from 'src/app/_services/snackbar.service';
+import { UsoElettrodomesticoService } from 'src/app/_services/uso-elettrodomestico.service';
 import { UtilsService } from 'src/app/_services/utils.service';
 import { AbstractLettureSearch } from 'src/app/abstract/abstract-letture-search';
 import { LetturaDto } from 'src/app/dto/lettura-dto';
 import { LetturaFilterDto } from 'src/app/dto/lettura-filter-dto';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
-import { LetturaElettrodomesticiComponent } from '../lettura-elettrodomestici/lettura-elettrodomestici.component';
-import { UsoElettrodomesticoService } from 'src/app/_services/uso-elettrodomestico.service';
 import { EditLetturaComponent } from '../edit-lettura/edit-lettura.component';
-import { Lettura } from '../../_db/db';
+import { LetturaElettrodomesticiComponent } from '../lettura-elettrodomestici/lettura-elettrodomestici.component';
+import { LettureFilterComponent } from '../letture-filter/letture-filter.component';
+import { UsoElettrodomesticoComponent } from '../uso-elettrodomestico/uso-elettrodomestico.component';
 
 @Component({
-    selector: 'app-letture',
-    templateUrl: './letture.component.html',
-    styleUrls: ['./letture.component.scss'],
-    animations: [
-        trigger('detailExpand', [
-            state('collapsed', style({ height: '0px', minHeight: '0' })),
-            state('expanded', style({ height: '*' })),
-            transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
-        ]),
-    ],
-    standalone: false
+  selector: 'app-letture',
+  templateUrl: './letture.component.html',
+  styleUrls: ['./letture.component.scss'],
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatIconModule,
+    MatPaginatorModule,
+    MatTableModule,
+    LettureFilterComponent,
+    UsoElettrodomesticoComponent,
+  ],
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed', style({ height: '0px', minHeight: '0' })),
+      state('expanded', style({ height: '*' })),
+      transition(
+        'expanded <=> collapsed',
+        animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')
+      ),
+    ]),
+  ],
 })
 export class LettureComponent
   extends AbstractLettureSearch
   implements OnInit, AfterViewInit
 {
+  private readonly service = inject(LetturaService);
+  private readonly usoEletRepo = inject(UsoElettrodomesticoRepository);
+  private readonly usoEletService = inject(UsoElettrodomesticoService);
+  readonly dialog = inject(MatDialog);
+  private readonly utils = inject(UtilsService);
+  private readonly snackBar = inject(SnackbarService);
+
   pageSize = 20;
   totalSize = 0;
   currentPage = 0;
@@ -56,16 +85,6 @@ export class LettureComponent
     'escludiDaMinMax',
     'azioni',
   ];
-  constructor(
-    private service: LetturaService,
-    private usoEletRepo: UsoElettrodomesticoRepository,
-    private usoEletService: UsoElettrodomesticoService,
-    public dialog: MatDialog,
-    private utils: UtilsService,
-    private snackBar: SnackbarService
-  ) {
-    super();
-  }
 
   ngOnInit(): void {
     this.service.getTableValues().subscribe({
@@ -74,10 +93,8 @@ export class LettureComponent
         this.cerca(new LetturaFilterDto());
       },
       error: (err) => {
-        console.log('Errore load letture', err);
         this.snackBar.error('Errore caricamento letture: ' + err);
       },
-      complete: () => {},
     });
   }
 
@@ -98,14 +115,12 @@ export class LettureComponent
           giorno: nextDay,
         } as Lettura;
         this.service.salva(lettura).subscribe({
-          next: (data) => {
+          next: () => {
             this.snackBar.success('Lettura salvata.');
           },
           error: (err) => {
-            console.log('errore salvataggio lettura: ', err);
             this.snackBar.error('Errore salvataggio lettura: ' + err);
           },
-          complete: () => {},
         });
       },
     });
@@ -119,17 +134,15 @@ export class LettureComponent
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.service.elimina(toDelete).subscribe({
-          next: (data) => {
+          next: () => {
             this.dataSource = this.dataSource.filter(
               (el) => el.id !== toDelete.id
             );
             this.snackBar.success('Lettura eliminata');
           },
           error: (err) => {
-            console.log('errore cancellazione: ', err);
             this.snackBar.error('Errore cancellazione lettura: ' + err);
           },
-          complete: () => {},
         });
       }
     });
@@ -153,14 +166,12 @@ export class LettureComponent
           const saves$ = result.map((el) =>
             this.usoEletRepo.save(el).pipe(
               catchError((err) => {
-                console.log('errore salvataggio multiplo: ', err);
                 this.snackBar.error(err);
                 return of(undefined);
               })
             )
           );
           forkJoin(saves$).subscribe({
-            next: (data) => {},
             complete: () => {
               this.snackBar.success('Salvataggio completato.');
               this.ngOnInit();
@@ -168,44 +179,35 @@ export class LettureComponent
           });
         } else {
           this.usoEletRepo.save(result).subscribe({
-            next: (data) => {
+            next: () => {
               this.usoEletService.getByGiorno(lettura.giorno).subscribe({
                 next: (data) => {
                   lettura.elettrodomestici = data;
                 },
-                error: (err) => {
-                  console.log('errore load utilizzo: ', err);
-                },
-                complete: () => {},
               });
               this.snackBar.success('Utilizzo salvato');
             },
             error: (err) => {
-              console.log('errore cancellazione: ', err);
               this.snackBar.error('Errore salvataggio utilizzo: ' + err);
             },
-            complete: () => {},
           });
         }
       }
     });
   }
 
-  onUsoUpdate(event: any) {
+  onUsoUpdate(_event: any) {
     this.ngOnInit();
   }
 
-  async ricalcolaConsumi() {
-    const val$ = await this.service.ricalcolaConsumi();
-    forkJoin(val$).subscribe({
-      next: (data) => {
+  ricalcolaConsumi() {
+    this.service.ricalcolaConsumi().subscribe({
+      next: () => {
         this.snackBar.success('Aggiornamento consumi completato');
       },
       error: (err) => {
-        console.log('errore update consumi: ', err);
         this.snackBar.error('Errore update consumi: ' + err);
       },
-      complete: () => {},
     });
   }
 
