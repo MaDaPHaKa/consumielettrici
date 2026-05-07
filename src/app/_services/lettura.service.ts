@@ -16,7 +16,7 @@ export class LetturaService {
     public repository: LetturaRepository,
     private usoService: UsoElettrodomesticoService,
     private utils: UtilsService
-  ) {}
+  ) { }
 
   getTableValues(): Observable<LetturaDto[]> {
     return this.repository.getAll().pipe(
@@ -100,19 +100,7 @@ export class LetturaService {
   ): number {
     let consumo = 0;
     if (prevLett) {
-      const firstBaseLine = new Date();
-      firstBaseLine.setFullYear(2024);
-      firstBaseLine.setDate(29);
-      firstBaseLine.setMonth(1);
-      firstBaseLine.setHours(0, 0, 0, 0);
-      const baseLines = [
-        new CambioAnno(1502.1, 2024, firstBaseLine),
-        new CambioAnno(1317.368, 2025),
-      ];
-      const currCamb = this.recuperaCambioAnno(
-        baseLines,
-        currLett.giorno.getTime()
-      );
+      const currCamb = this.getCambioAnno(currLett.giorno);
       console.log('curr: ', currLett);
       console.log('base: ', currCamb);
       const baseLineDate = currCamb.dateBaseLine;
@@ -131,6 +119,24 @@ export class LetturaService {
     }
     if (consumo < 0) return 0;
     return consumo;
+  }
+
+  getCambioAnno(giorno: Date) {
+    const firstBaseLine = new Date();
+    firstBaseLine.setFullYear(2024);
+    firstBaseLine.setDate(29);
+    firstBaseLine.setMonth(1);
+    firstBaseLine.setHours(0, 0, 0, 0);
+    const baseLines = [
+      new CambioAnno(1502.1, 2024, firstBaseLine),
+      new CambioAnno(1317.368, 2025),
+      new CambioAnno(1351.9300000000014, 2026), //FIXME mettere il valore corretto
+    ];
+    const currCamb = this.recuperaCambioAnno(
+      baseLines,
+      giorno.getTime()
+    );
+    return currCamb;
   }
 
   private recuperaCambioAnno(
