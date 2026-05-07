@@ -32,6 +32,27 @@ export interface CambioAnno extends Identifiable {
   note?: string;
 }
 
+export const SEED_CAMBI_ANNO: CambioAnno[] = [
+  {
+    anno: 2024,
+    lastBaseline: 1502.1,
+    dateBaseLine: new Date(2024, 1, 29, 0, 0, 0, 0),
+    note: 'Seed iniziale',
+  },
+  {
+    anno: 2025,
+    lastBaseline: 1317.368,
+    dateBaseLine: new Date(2025, 0, 31, 0, 0, 0, 0),
+    note: 'Seed iniziale',
+  },
+  {
+    anno: 2026,
+    lastBaseline: 1351.9300000000014,
+    dateBaseLine: new Date(2026, 0, 31, 0, 0, 0, 0),
+    note: 'Seed iniziale (verificare valore)',
+  },
+];
+
 export class AppDB extends Dexie {
   elettrodomestici!: Table<Elettrodomestico, number>;
   usoElettrodomestici!: Table<UsoElettrodomestico, number>;
@@ -55,29 +76,9 @@ export class AppDB extends Dexie {
         cambiAnno: '++id, &anno, dateBaseLine',
       })
       .upgrade(async (tx) => {
-        const seedDate2024 = new Date(2024, 1, 29, 0, 0, 0, 0);
-        const seedDate2025 = new Date(2025, 0, 31, 0, 0, 0, 0);
-        const seedDate2026 = new Date(2026, 0, 31, 0, 0, 0, 0);
-        await tx.table('cambiAnno').bulkAdd([
-          {
-            anno: 2024,
-            lastBaseline: 1502.1,
-            dateBaseLine: seedDate2024,
-            note: 'Seed migrazione v4',
-          },
-          {
-            anno: 2025,
-            lastBaseline: 1317.368,
-            dateBaseLine: seedDate2025,
-            note: 'Seed migrazione v4',
-          },
-          {
-            anno: 2026,
-            lastBaseline: 1351.9300000000014,
-            dateBaseLine: seedDate2026,
-            note: 'Seed migrazione v4 (verificare valore)',
-          },
-        ]);
+        await tx
+          .table('cambiAnno')
+          .bulkAdd(SEED_CAMBI_ANNO.map((c) => ({ ...c, note: 'Seed migrazione v4' })));
       });
     this.on('populate', () => this.populate());
   }
@@ -89,29 +90,7 @@ export class AppDB extends Dexie {
       { nome: 'Aspirapolvere' },
       { nome: 'Lavatrice' },
     ]);
-    const seedDate2024 = new Date(2024, 1, 29, 0, 0, 0, 0);
-    const seedDate2025 = new Date(2025, 0, 31, 0, 0, 0, 0);
-    const seedDate2026 = new Date(2026, 0, 31, 0, 0, 0, 0);
-    await db.cambiAnno.bulkAdd([
-      {
-        anno: 2024,
-        lastBaseline: 1502.1,
-        dateBaseLine: seedDate2024,
-        note: 'Seed iniziale',
-      },
-      {
-        anno: 2025,
-        lastBaseline: 1317.368,
-        dateBaseLine: seedDate2025,
-        note: 'Seed iniziale',
-      },
-      {
-        anno: 2026,
-        lastBaseline: 1351.9300000000014,
-        dateBaseLine: seedDate2026,
-        note: 'Seed iniziale (verificare valore)',
-      },
-    ]);
+    await db.cambiAnno.bulkAdd(SEED_CAMBI_ANNO);
   }
 }
 

@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { exportDB, importInto } from 'dexie-export-import';
 import * as FileSaver from 'file-saver-es';
 import { db } from 'src/app/_db/db';
+import { SEED_CAMBI_ANNO } from 'src/app/_db/db';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { SnackbarService } from 'src/app/_services/snackbar.service';
 
@@ -45,8 +46,20 @@ export class NavbarComponent {
 
   async importa() {
     if (this.importFile) {
-      await importInto(db, this.importFile, { clearTablesBeforeImport: true });
+      await importInto(db, this.importFile, {
+        clearTablesBeforeImport: true,
+        acceptVersionDiff: true,
+      });
+      await this.seedCambiAnnoIfEmpty();
       this.snackBar.success('Import completato.');
     }
+  }
+
+  private async seedCambiAnnoIfEmpty() {
+    const count = await db.cambiAnno.count();
+    if (count > 0) return;
+    await db.cambiAnno.bulkAdd(
+      SEED_CAMBI_ANNO.map((c) => ({ ...c, note: 'Seed post-import (backup v3)' }))
+    );
   }
 }
