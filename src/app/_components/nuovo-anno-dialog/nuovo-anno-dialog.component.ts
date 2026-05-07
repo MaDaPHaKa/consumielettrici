@@ -11,9 +11,10 @@ import { CambioAnnoService } from 'src/app/_services/cambio-anno.service';
 import { SnackbarService } from 'src/app/_services/snackbar.service';
 
 @Component({
-  selector: 'app-nuovo-anno-dialog',
-  templateUrl: './nuovo-anno-dialog.component.html',
-  styleUrls: ['./nuovo-anno-dialog.component.scss'],
+    selector: 'app-nuovo-anno-dialog',
+    templateUrl: './nuovo-anno-dialog.component.html',
+    styleUrls: ['./nuovo-anno-dialog.component.scss'],
+    standalone: false
 })
 export class NuovoAnnoDialogComponent implements OnInit {
   form: FormGroup = new FormGroup([]);

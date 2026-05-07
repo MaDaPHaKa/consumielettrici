@@ -9,9 +9,10 @@ import { LetturaFilterDto } from 'src/app/dto/lettura-filter-dto';
 import { NuovoAnnoDialogComponent } from '../nuovo-anno-dialog/nuovo-anno-dialog.component';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss'],
+    selector: 'app-home',
+    templateUrl: './home.component.html',
+    styleUrls: ['./home.component.scss'],
+    standalone: false
 })
 export class HomeComponent extends AbstractLettureSearch {
   displayedColumns = ['data', 'giorno', 'consumo', 'elettrodomestici'];

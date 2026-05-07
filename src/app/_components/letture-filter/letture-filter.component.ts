@@ -5,9 +5,10 @@ import { SnackbarService } from 'src/app/_services/snackbar.service';
 import { LetturaFilterDto } from 'src/app/dto/lettura-filter-dto';
 
 @Component({
-  selector: 'app-letture-filter',
-  templateUrl: './letture-filter.component.html',
-  styleUrls: ['./letture-filter.component.scss'],
+    selector: 'app-letture-filter',
+    templateUrl: './letture-filter.component.html',
+    styleUrls: ['./letture-filter.component.scss'],
+    standalone: false
 })
 export class LettureFilterComponent implements OnInit {
   @Output()

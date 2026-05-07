@@ -15,9 +15,10 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
 import { UtilsService } from 'src/app/_services/utils.service';
 
 @Component({
-  selector: 'app-lettura-elettrodomestici',
-  templateUrl: './lettura-elettrodomestici.component.html',
-  styleUrls: ['./lettura-elettrodomestici.component.scss'],
+    selector: 'app-lettura-elettrodomestici',
+    templateUrl: './lettura-elettrodomestici.component.html',
+    styleUrls: ['./lettura-elettrodomestici.component.scss'],
+    standalone: false
 })
 export class LetturaElettrodomesticiComponent implements OnInit {
   uso: LetturaElettrodomesticoDto | undefined;

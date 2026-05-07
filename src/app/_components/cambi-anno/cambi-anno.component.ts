@@ -10,9 +10,10 @@ import { NuovoAnnoDialogComponent } from '../nuovo-anno-dialog/nuovo-anno-dialog
 import { forkJoin } from 'rxjs';
 
 @Component({
-  selector: 'app-cambi-anno',
-  templateUrl: './cambi-anno.component.html',
-  styleUrls: ['./cambi-anno.component.scss'],
+    selector: 'app-cambi-anno',
+    templateUrl: './cambi-anno.component.html',
+    styleUrls: ['./cambi-anno.component.scss'],
+    standalone: false
 })
 export class CambiAnnoComponent implements OnInit {
   dataSource: CambioAnno[] = [];

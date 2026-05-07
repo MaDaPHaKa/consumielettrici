@@ -15,9 +15,10 @@ interface DialogData {
 }
 
 @Component({
-  selector: 'app-cambio-anno-dialog',
-  templateUrl: './cambio-anno-dialog.component.html',
-  styleUrls: ['./cambio-anno-dialog.component.scss'],
+    selector: 'app-cambio-anno-dialog',
+    templateUrl: './cambio-anno-dialog.component.html',
+    styleUrls: ['./cambio-anno-dialog.component.scss'],
+    standalone: false
 })
 export class CambioAnnoDialogComponent implements OnInit {
   form: FormGroup = new FormGroup([]);

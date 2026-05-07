@@ -8,9 +8,10 @@ import { ElettrodomesticoService } from 'src/app/_services/elettrodomestico.serv
 import { ElettrodomesticoTableDto } from 'src/app/dto/elettrodomestico-table-dto';
 
 @Component({
-  selector: 'app-elettrodomestici',
-  templateUrl: './elettrodomestici.component.html',
-  styleUrls: ['./elettrodomestici.component.scss'],
+    selector: 'app-elettrodomestici',
+    templateUrl: './elettrodomestici.component.html',
+    styleUrls: ['./elettrodomestici.component.scss'],
+    standalone: false
 })
 export class ElettrodomesticiComponent {
   nuovo?: string;

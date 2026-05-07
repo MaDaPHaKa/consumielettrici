@@ -7,9 +7,10 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
 import { LetturaElettrodomesticiComponent } from '../lettura-elettrodomestici/lettura-elettrodomestici.component';
 
 @Component({
-  selector: 'app-uso-elettrodomestico',
-  templateUrl: './uso-elettrodomestico.component.html',
-  styleUrls: ['./uso-elettrodomestico.component.scss'],
+    selector: 'app-uso-elettrodomestico',
+    templateUrl: './uso-elettrodomestico.component.html',
+    styleUrls: ['./uso-elettrodomestico.component.scss'],
+    standalone: false
 })
 export class UsoElettrodomesticoComponent {
   @Input()

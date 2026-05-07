@@ -6,9 +6,10 @@ import { CambioAnnoService } from 'src/app/_services/cambio-anno.service';
 import { AggiungiLetturaComponent } from '../aggiungi-lettura/aggiungi-lettura.component';
 
 @Component({
-  selector: 'app-edit-lettura',
-  templateUrl: './edit-lettura.component.html',
-  styleUrls: ['./edit-lettura.component.scss'],
+    selector: 'app-edit-lettura',
+    templateUrl: './edit-lettura.component.html',
+    styleUrls: ['./edit-lettura.component.scss'],
+    standalone: false
 })
 export class EditLetturaComponent extends AggiungiLetturaComponent {
   readonly dialogRef = inject(MatDialogRef<EditLetturaComponent>);

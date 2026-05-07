@@ -11,9 +11,10 @@ import { SnackbarService } from 'src/app/_services/snackbar.service';
 import { UtilsService } from 'src/app/_services/utils.service';
 
 @Component({
-  selector: 'app-aggiungi-lettura',
-  templateUrl: './aggiungi-lettura.component.html',
-  styleUrls: ['./aggiungi-lettura.component.scss'],
+    selector: 'app-aggiungi-lettura',
+    templateUrl: './aggiungi-lettura.component.html',
+    styleUrls: ['./aggiungi-lettura.component.scss'],
+    standalone: false
 })
 export class AggiungiLetturaComponent implements OnInit {
   @Input()
