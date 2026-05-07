@@ -1,0 +1,62 @@
+<h2 mat-dialog-title>Nuovo Anno Bolletta</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" class="dialog-form">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Anno</mat-label>
+      <input matInput type="number" formControlName="anno" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Data Reset</mat-label>
+      <input
+        matInput
+        [matDatepicker]="picker"
+        formControlName="dateBaseLine"
+      />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Lettura Base (kWh)</mat-label>
+      <input
+        matInput
+        type="number"
+        step="0.001"
+        formControlName="lastBaseline"
+      />
+      <mat-hint>Proposta auto: {{ proposed }} kWh</mat-hint>
+    </mat-form-field>
+
+    <mat-checkbox
+      [(ngModel)]="override"
+      [ngModelOptions]="{ standalone: true }"
+      (change)="toggleOverride()"
+    >
+      Override manuale lettura base
+    </mat-checkbox>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Note</mat-label>
+      <input matInput formControlName="note" />
+    </mat-form-field>
+
+    <mat-checkbox
+      [(ngModel)]="ricalcolaConsumi"
+      [ngModelOptions]="{ standalone: true }"
+    >
+      Ricalcola consumi letture esistenti
+    </mat-checkbox>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="chiudi()">Annulla</button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="salva()"
+    [disabled]="form.invalid"
+  >
+    Crea
+  </button>
+</mat-dialog-actions>

@@ -27,7 +27,7 @@ export abstract class BaseRepository<T extends Identifiable> {
 
   save(lettura: T): Observable<number> {
     if (lettura.id) {
-      return from(this.table.update(lettura.id, lettura));
+      return from(this.table.put(lettura, lettura.id));
     } else {
       return from(this.table.add(lettura));
     }

@@ -15,13 +15,14 @@ import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { AggiungiLetturaComponent } from './_components/aggiungi-lettura/aggiungi-lettura.component';
-import { ChartsComponent } from './_components/charts/charts.component';
+import { CambiAnnoComponent } from './_components/cambi-anno/cambi-anno.component';
+import { CambioAnnoDialogComponent } from './_components/cambio-anno-dialog/cambio-anno-dialog.component';
 import { ConfirmDialogComponent } from './_components/confirm-dialog/confirm-dialog.component';
 import { EditLetturaComponent } from './_components/edit-lettura/edit-lettura.component';
 import { ElettrodomesticiComponent } from './_components/elettrodomestici/elettrodomestici.component';
 import { HomeComponent } from './_components/home/home.component';
+import { NuovoAnnoDialogComponent } from './_components/nuovo-anno-dialog/nuovo-anno-dialog.component';
 import { LetturaElettrodomesticiComponent } from './_components/lettura-elettrodomestici/lettura-elettrodomestici.component';
 import { LettureFilterComponent } from './_components/letture-filter/letture-filter.component';
 import { LettureComponent } from './_components/letture/letture.component';
@@ -41,9 +42,11 @@ import { AppComponent } from './app.component';
     LetturaElettrodomesticiComponent,
     ElettrodomesticiComponent,
     NavbarComponent,
-    ChartsComponent,
     LettureFilterComponent,
     EditLetturaComponent,
+    CambiAnnoComponent,
+    CambioAnnoDialogComponent,
+    NuovoAnnoDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -63,7 +66,6 @@ import { AppComponent } from './app.component';
     MatDatepickerModule,
     MatNativeDateModule,
     MatButtonModule,
-    NgxChartsModule,
     BrowserAnimationsModule,
   ],
   providers: [],

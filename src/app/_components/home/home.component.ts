@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { forkJoin } from 'rxjs';
 import { LetturaService } from 'src/app/_services/lettura.service';
 import { SnackbarService } from 'src/app/_services/snackbar.service';
 import { UtilsService } from 'src/app/_services/utils.service';
 import { AbstractLettureSearch } from 'src/app/abstract/abstract-letture-search';
 import { LetturaFilterDto } from 'src/app/dto/lettura-filter-dto';
+import { NuovoAnnoDialogComponent } from '../nuovo-anno-dialog/nuovo-anno-dialog.component';
 
 @Component({
   selector: 'app-home',
@@ -63,5 +65,22 @@ export class HomeComponent extends AbstractLettureSearch {
   giornoSettimana(d: Date) {
     if (d instanceof Date) return this.utils.giornoSettimana(d);
     return '';
+  }
+
+  nuovoAnno() {
+    const ref = this.dialog.open(NuovoAnnoDialogComponent, {
+      width: '420px',
+    });
+    ref.afterClosed().subscribe(async (res) => {
+      if (res?.ricalcola) {
+        const obs = await this.service.ricalcolaConsumi();
+        if (obs.length === 0) return;
+        forkJoin(obs).subscribe({
+          next: () => this.snackBar.success('Consumi ricalcolati'),
+          error: (err) =>
+            this.snackBar.error('Errore ricalcolo consumi: ' + err),
+        });
+      }
+    });
   }
 }

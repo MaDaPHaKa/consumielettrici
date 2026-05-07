@@ -1,10 +1,11 @@
-@import "../node_modules/bulma/sass/utilities/_all.sass";
-@import "../node_modules/bulma/sass/grid/columns.sass";
-@import "../node_modules/bulma/sass/helpers/color.sass";
-@import "../node_modules/bulma/sass/helpers/spacing.sass";
-@import "../node_modules/bulma/sass/helpers/typography.sass";
-@import "../node_modules/bulma/sass/form/shared.sass";
-@import "../node_modules/bulma/sass/form/input-textarea.sass";
+@use "bulma/sass/base";
+@use "bulma/sass/utilities";
+@use "bulma/sass/grid/columns";
+@use "bulma/sass/helpers/color";
+@use "bulma/sass/helpers/spacing";
+@use "bulma/sass/helpers/typography";
+@use "bulma/sass/form/shared";
+@use "bulma/sass/form/input-textarea";
 
 html,
 body {

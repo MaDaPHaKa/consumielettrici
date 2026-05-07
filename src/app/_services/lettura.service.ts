@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { liveQuery } from 'dexie';
 import { Observable, forkJoin, from, map, mergeMap, switchMap } from 'rxjs';
-import { Lettura } from '../_db/db';
+import { CambioAnno, Lettura } from '../_db/db';
 import { LetturaRepository } from '../_repositories/lettura-repository';
 import { LetturaDto } from '../dto/lettura-dto';
+import { CambioAnnoService } from './cambio-anno.service';
 import { UsoElettrodomesticoService } from './uso-elettrodomestico.service';
 import { UtilsService } from './utils.service';
-import { CambioAnno } from '../dto/cambio-anno';
 
 @Injectable({
   providedIn: 'root',
@@ -15,8 +15,9 @@ export class LetturaService {
   constructor(
     public repository: LetturaRepository,
     private usoService: UsoElettrodomesticoService,
-    private utils: UtilsService
-  ) { }
+    private utils: UtilsService,
+    private cambioAnnoService: CambioAnnoService
+  ) {}
 
   getTableValues(): Observable<LetturaDto[]> {
     return this.repository.getAll().pipe(
@@ -70,11 +71,15 @@ export class LetturaService {
   salva(lettura: Lettura): Observable<number> {
     lettura.giorno.setHours(0, 0, 0, 0);
     const prevDay = this.utils.getGiornoPrima(lettura.giorno);
-    return from(this.repository.table.where({ giorno: prevDay }).first()).pipe(
-      switchMap((prevLett) => {
-        lettura.consumo = this.calcolaConsumo(lettura, prevLett);
-        return this.repository.save(lettura);
-      })
+    return this.cambioAnnoService.getForGiorno(lettura.giorno).pipe(
+      switchMap((cambio) =>
+        from(this.repository.table.where({ giorno: prevDay }).first()).pipe(
+          switchMap((prevLett) => {
+            lettura.consumo = this.calcolaConsumo(lettura, prevLett, cambio);
+            return this.repository.save(lettura);
+          })
+        )
+      )
     );
   }
 
@@ -89,22 +94,24 @@ export class LetturaService {
       const prevLett = letture.find(
         (el) => el.giorno.getTime() === prevDay.getTime()
       );
-      lettura.consumo = this.calcolaConsumo(lettura, prevLett);
-      return this.salva(lettura);
+      return this.cambioAnnoService.getForGiorno(lettura.giorno).pipe(
+        switchMap((cambio) => {
+          lettura.consumo = this.calcolaConsumo(lettura, prevLett, cambio);
+          return this.repository.save(lettura);
+        })
+      );
     });
   }
 
   private calcolaConsumo(
     currLett: Lettura,
-    prevLett: Lettura | undefined | null
+    prevLett: Lettura | undefined | null,
+    cambio: CambioAnno
   ): number {
     let consumo = 0;
     if (prevLett) {
-      const currCamb = this.getCambioAnno(currLett.giorno);
-      console.log('curr: ', currLett);
-      console.log('base: ', currCamb);
-      const baseLineDate = currCamb.dateBaseLine;
-      const baseLineValue = currCamb.lastBaseline;
+      const baseLineDate = cambio.dateBaseLine;
+      const baseLineValue = cambio.lastBaseline;
       const currLet =
         currLett.giorno > baseLineDate
           ? currLett.lettura + baseLineValue
@@ -119,40 +126,5 @@ export class LetturaService {
     }
     if (consumo < 0) return 0;
     return consumo;
-  }
-
-  getCambioAnno(giorno: Date) {
-    const firstBaseLine = new Date();
-    firstBaseLine.setFullYear(2024);
-    firstBaseLine.setDate(29);
-    firstBaseLine.setMonth(1);
-    firstBaseLine.setHours(0, 0, 0, 0);
-    const baseLines = [
-      new CambioAnno(1502.1, 2024, firstBaseLine),
-      new CambioAnno(1317.368, 2025),
-      new CambioAnno(1351.9300000000014, 2026), //FIXME mettere il valore corretto
-    ];
-    const currCamb = this.recuperaCambioAnno(
-      baseLines,
-      giorno.getTime()
-    );
-    return currCamb;
-  }
-
-  private recuperaCambioAnno(
-    baseLines: CambioAnno[],
-    current: number
-  ): CambioAnno {
-    let cambio: CambioAnno = baseLines[0];
-    if (current <= cambio.dateBaseLine.getTime()) return cambio;
-    baseLines.forEach((val) => {
-      if (
-        (current >= cambio.dateBaseLine.getTime() &&
-          current < val.dateBaseLine.getTime()) ||
-        current >= val.dateBaseLine.getTime()
-      )
-        cambio = val;
-    });
-    return cambio;
   }
 }
