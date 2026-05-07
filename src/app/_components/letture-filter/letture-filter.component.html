@@ -11,9 +11,11 @@
 <mat-form-field class="pl-1">
   <mat-label>Elettrodomestico</mat-label>
   <mat-select multiple [(ngModel)]="elettrodomestico">
-    <mat-option *ngFor="let el of elett" [value]="el">
-      {{ el.nome }}
-    </mat-option>
+    @for (el of elett; track el) {
+      <mat-option [value]="el">
+        {{ el.nome }}
+      </mat-option>
+    }
   </mat-select>
 </mat-form-field>
 <button mat-button (click)="cerca()">Cerca</button>

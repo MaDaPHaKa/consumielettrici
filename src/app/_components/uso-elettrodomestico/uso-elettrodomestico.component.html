@@ -1,19 +1,23 @@
-<div *ngIf="uso">
-  {{ uso.elettrodomestico.nome }}{{ getDurata() }}{{ getNote() }}
-  <button
-    *ngIf="!nascondiPulsanti"
-    mat-icon-button
-    class="small-icon-button"
-    (click)="modifica()"
-  >
-    <mat-icon>edit</mat-icon>
-  </button>
-  <button
-    *ngIf="!nascondiPulsanti"
-    mat-icon-button
-    class="small-icon-button"
-    (click)="elimina()"
-  >
-    <mat-icon>delete</mat-icon>
-  </button>
-</div>
+@if (uso) {
+  <div>
+    {{ uso.elettrodomestico.nome }}{{ getDurata() }}{{ getNote() }}
+    @if (!nascondiPulsanti) {
+      <button
+        mat-icon-button
+        class="small-icon-button"
+        (click)="modifica()"
+        >
+        <mat-icon>edit</mat-icon>
+      </button>
+    }
+    @if (!nascondiPulsanti) {
+      <button
+        mat-icon-button
+        class="small-icon-button"
+        (click)="elimina()"
+        >
+        <mat-icon>delete</mat-icon>
+      </button>
+    }
+  </div>
+}

@@ -19,7 +19,7 @@
         [dataSource]="dataSource"
         class="mat-elevation-z8"
         multiTemplateDataRows
-      >
+        >
         <ng-container matColumnDef="data">
           <th mat-header-cell *matHeaderCellDef>Data</th>
           <td mat-cell *matCellDef="let element">
@@ -41,11 +41,12 @@
         <ng-container matColumnDef="elettrodomestici">
           <th mat-header-cell *matHeaderCellDef>Elettrodomestici</th>
           <td mat-cell *matCellDef="let element">
-            <app-uso-elettrodomestico
-              *ngFor="let el of element.elettrodomestici"
-              [uso]="el"
-              [nascondiPulsanti]="true"
-            ></app-uso-elettrodomestico>
+            @for (el of element.elettrodomestici; track el) {
+              <app-uso-elettrodomestico
+                [uso]="el"
+                [nascondiPulsanti]="true"
+              ></app-uso-elettrodomestico>
+            }
           </td>
         </ng-container>
 

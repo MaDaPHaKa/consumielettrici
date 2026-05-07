@@ -5,9 +5,11 @@
       <mat-form-field>
         <mat-label>Elettrodomestico</mat-label>
         <mat-select [formControlName]="'elettrodomesticoId'">
-          <mat-option *ngFor="let el of elett" [value]="el.id">
-            {{ el.nome }}
-          </mat-option>
+          @for (el of elett; track el) {
+            <mat-option [value]="el.id">
+              {{ el.nome }}
+            </mat-option>
+          }
         </mat-select>
       </mat-form-field>
     </div>
@@ -39,25 +41,27 @@
         <textarea [formControlName]="'note'" matInput type="number"></textarea>
       </mat-form-field>
     </div>
-    <div *ngIf="uso === undefined">
-      <mat-form-field>
-        <mat-label>Enter a date range</mat-label>
-        <mat-date-range-input [rangePicker]="range">
-          <input
-            matStartDate
-            [formControlName]="'dal'"
-            placeholder="Start date"
-          />
-          <input matEndDate [formControlName]="'al'" placeholder="End date" />
-        </mat-date-range-input>
-        <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
-        <mat-datepicker-toggle
-          matIconSuffix
-          [for]="range"
-        ></mat-datepicker-toggle>
-        <mat-date-range-picker #range></mat-date-range-picker>
-      </mat-form-field>
-    </div>
+    @if (uso === undefined) {
+      <div>
+        <mat-form-field>
+          <mat-label>Enter a date range</mat-label>
+          <mat-date-range-input [rangePicker]="range">
+            <input
+              matStartDate
+              [formControlName]="'dal'"
+              placeholder="Start date"
+              />
+            <input matEndDate [formControlName]="'al'" placeholder="End date" />
+          </mat-date-range-input>
+          <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="range"
+          ></mat-datepicker-toggle>
+          <mat-date-range-picker #range></mat-date-range-picker>
+        </mat-form-field>
+      </div>
+    }
   </form>
 </div>
 <div mat-dialog-actions>
@@ -65,7 +69,7 @@
     mat-button
     [disabled]="!form.valid || !durataValida()"
     (click)="salva()"
-  >
+    >
     Salva
   </button>
   <button mat-button (click)="annulla()">Annulla</button>
