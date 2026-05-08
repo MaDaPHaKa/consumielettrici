@@ -19,5 +19,14 @@
         <mat-icon>delete</mat-icon>
       </button>
     }
+    @if (!nascondiPulsanti()) {
+      <button
+        mat-icon-button
+        class="small-icon-button"
+        (click)="clona()"
+        >
+        <mat-icon>content_copy</mat-icon>
+      </button>
+    }
   </div>
 }

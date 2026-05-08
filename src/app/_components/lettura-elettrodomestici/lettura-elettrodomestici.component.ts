@@ -45,6 +45,7 @@ export class LetturaElettrodomesticiComponent implements OnInit {
   readonly data = inject<{
     lettura: LetturaDto;
     uso: LetturaElettrodomesticoDto;
+    clone?: boolean;
   }>(MAT_DIALOG_DATA);
   private readonly builder = inject(FormBuilder);
   private readonly elettrRepo = inject(ElettrodomesticoRepository);
@@ -54,6 +55,7 @@ export class LetturaElettrodomesticiComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   uso: LetturaElettrodomesticoDto | undefined = this.data.uso;
+  clone: boolean = !!this.data.clone;
   form: FormGroup = new FormGroup([]);
   elett: Elettrodomestico[] = [];
   lettura: LetturaDto = this.data.lettura;
@@ -76,6 +78,9 @@ export class LetturaElettrodomesticiComponent implements OnInit {
   }
 
   initForm() {
+    const giornoVal = this.clone
+      ? undefined
+      : this.uso?.giorno || this.lettura?.giorno;
     this.form = this.builder.group({
       elettrodomesticoId: new FormControl(
         this.uso?.elettrodomestico.id,
@@ -84,7 +89,7 @@ export class LetturaElettrodomesticiComponent implements OnInit {
       durataMin: new FormControl(this.uso?.minuti),
       durataOre: new FormControl(this.uso?.ore),
       giorno: new FormControl(
-        { value: this.uso?.giorno || this.lettura.giorno, disabled: true },
+        { value: giornoVal, disabled: !this.clone && !!giornoVal },
         Validators.required
       ),
       note: new FormControl(this.uso?.note),
@@ -111,7 +116,7 @@ export class LetturaElettrodomesticiComponent implements OnInit {
       for (let giorno = 0; giorno <= giorniDiff; giorno++) {
         const giornoDaSalvare = this.utils.aggiungiGiorni(dal, giorno);
         const uso = {
-          id: this.uso?.id,
+          id: this.clone ? undefined : this.uso?.id,
           elettrodomesticoId: this.form.get('elettrodomesticoId')?.value,
           note: this.form.get('note')?.value,
           ore: this.form.get('durataOre')?.value,
@@ -123,7 +128,7 @@ export class LetturaElettrodomesticiComponent implements OnInit {
       }
     } else {
       const uso = {
-        id: this.uso?.id,
+        id: this.clone ? undefined : this.uso?.id,
         elettrodomesticoId: this.form.get('elettrodomesticoId')?.value,
         note: this.form.get('note')?.value,
         ore: this.form.get('durataOre')?.value,

@@ -41,7 +41,7 @@
         <textarea [formControlName]="'note'" matInput type="number"></textarea>
       </mat-form-field>
     </div>
-    @if (uso === undefined) {
+    @if (uso === undefined || clone) {
       <div>
         <mat-form-field>
           <mat-label>Enter a date range</mat-label>

@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, input, output } from '@angu
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { catchError, forkJoin, of } from 'rxjs';
 import { UsoElettrodomesticoRepository } from  '@repositories/uso-elettrodomestico-repository';
 import { SnackbarService } from  '@services/snackbar.service';
 import { LetturaElettrodomesticoDto } from  '@dto/lettura-elettrodomestico-dto';
@@ -57,6 +58,51 @@ export class UsoElettrodomesticoComponent {
               this.snackBar.error('Errore modifica uso: ' + err);
             },
           });
+        }
+      });
+    }
+  }
+
+  clona() {
+    const u = this.uso();
+    if (u) {
+      const cloned: LetturaElettrodomesticoDto = {
+        ...u,
+        id: -1,
+        giorno: undefined as unknown as Date,
+      };
+      const dialogRef = this.dialog.open(LetturaElettrodomesticiComponent, {
+        data: { uso: cloned, clone: true },
+      });
+
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result) {
+          if (Array.isArray(result)) {
+            const saves$ = result.map((el) =>
+              this.usoEletRepo.save(el).pipe(
+                catchError((err) => {
+                  this.snackBar.error('Errore clonazione uso: ' + err);
+                  return of(undefined);
+                })
+              )
+            );
+            forkJoin(saves$).subscribe({
+              complete: () => {
+                this.snackBar.success('Uso clonato');
+                this.modified.emit();
+              },
+            });
+          } else {
+            this.usoEletRepo.save(result).subscribe({
+              next: () => {
+                this.snackBar.success('Uso clonato');
+                this.modified.emit();
+              },
+              error: (err) => {
+                this.snackBar.error('Errore clonazione uso: ' + err);
+              },
+            });
+          }
         }
       });
     }
