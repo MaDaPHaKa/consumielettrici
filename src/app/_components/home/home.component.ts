@@ -13,6 +13,7 @@ import { LetturaFilterDto } from 'src/app/dto/lettura-filter-dto';
 })
 export class HomeComponent extends AbstractLettureSearch {
   displayedColumns = ['data', 'giorno', 'consumo', 'elettrodomestici'];
+  somma: number = -1;
   media: number = -1;
   min: number = -1;
   max: number = -1;
@@ -48,10 +49,14 @@ export class HomeComponent extends AbstractLettureSearch {
         .sort((a, b) => a.consumo - b.consumo);
       this.max = perMinMax[perMinMax.length - 1].consumo;
       this.min = perMinMax[0].consumo;
+      const mediaList = copy.filter((el) => !el.escludiDaMedia);
       this.media =
-        copy
-          .filter((el) => !el.escludiDaMedia)
-          .reduce((partialSum, a) => partialSum + a.consumo, 0) / copy.length;
+        mediaList.reduce((partialSum, a) => partialSum + a.consumo, 0) /
+        mediaList.length;
+      this.somma = mediaList.reduce(
+        (partialSum, a) => partialSum + a.consumo,
+        0
+      );
     }
   }
 

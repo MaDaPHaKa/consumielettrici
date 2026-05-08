@@ -5,8 +5,8 @@ export class LetturaDto {
   giorno: Date = new Date();
   lettura: number = -1;
   elettrodomestici: LetturaElettrodomesticoDto[] = [];
-  expanded = false;
   consumo = -1;
+  consumoTotale = -1;
   escludiDaMedia = false;
   escludiDaMinMax = false;
 }

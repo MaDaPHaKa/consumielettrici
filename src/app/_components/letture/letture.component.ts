@@ -20,6 +20,8 @@ import { LetturaFilterDto } from 'src/app/dto/lettura-filter-dto';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { LetturaElettrodomesticiComponent } from '../lettura-elettrodomestici/lettura-elettrodomestici.component';
 import { UsoElettrodomesticoService } from 'src/app/_services/uso-elettrodomestico.service';
+import { EditLetturaComponent } from '../edit-lettura/edit-lettura.component';
+import { Lettura } from '../../_db/db';
 
 @Component({
   selector: 'app-letture',
@@ -43,7 +45,6 @@ export class LettureComponent
   pageSize = 20;
   totalSize = 0;
   currentPage = 0;
-  // paginated: LetturaDto[] = [];
   paginated: MatTableDataSource<LetturaDto> =
     new MatTableDataSource<LetturaDto>([]);
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
@@ -90,6 +91,28 @@ export class LettureComponent
     return this.utils.giornoSettimana(d);
   }
 
+  aggiungi() {
+    this.service.repository.orderedByGiorno().subscribe({
+      next: (data) => {
+        const nextDay = this.utils.aggiungiGiorni(data.reverse()[0].giorno, 1);
+        const lettura = {
+          lettura: 0,
+          giorno: nextDay,
+        } as Lettura;
+        this.service.salva(lettura).subscribe({
+          next: (data) => {
+            this.snackBar.success('Lettura salvata.');
+          },
+          error: (err) => {
+            console.log('errore salvataggio lettura: ', err);
+            this.snackBar.error('Errore salvataggio lettura: ' + err);
+          },
+          complete: () => {},
+        });
+      },
+    });
+  }
+
   elimina(toDelete: LetturaDto) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: { message: 'Elimino?' },
@@ -114,8 +137,11 @@ export class LettureComponent
     });
   }
 
-  espandi(element: LetturaDto) {
-    element.expanded = !element.expanded;
+  edit(element: LetturaDto) {
+    const dialogRef = this.dialog.open(EditLetturaComponent, {
+      data: element,
+    });
+    dialogRef.afterClosed().subscribe();
   }
 
   aggiungiElettrodomestico(lettura: LetturaDto) {

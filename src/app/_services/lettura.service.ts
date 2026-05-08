@@ -1,20 +1,12 @@
 import { Injectable } from '@angular/core';
-import {
-  Observable,
-  catchError,
-  forkJoin,
-  from,
-  map,
-  mergeMap,
-  of,
-  switchMap,
-} from 'rxjs';
+import { liveQuery } from 'dexie';
+import { Observable, forkJoin, from, map, mergeMap, switchMap } from 'rxjs';
 import { Lettura } from '../_db/db';
 import { LetturaRepository } from '../_repositories/lettura-repository';
 import { LetturaDto } from '../dto/lettura-dto';
 import { UsoElettrodomesticoService } from './uso-elettrodomestico.service';
-import { liveQuery } from 'dexie';
 import { UtilsService } from './utils.service';
+import { CambioAnno } from '../dto/cambio-anno';
 
 @Injectable({
   providedIn: 'root',
@@ -78,13 +70,12 @@ export class LetturaService {
   salva(lettura: Lettura): Observable<number> {
     lettura.giorno.setHours(0, 0, 0, 0);
     const prevDay = this.utils.getGiornoPrima(lettura.giorno);
-    return from(this.repository.table
-      .where({ giorno: prevDay })
-      .first()).pipe(switchMap(prevLett => {
+    return from(this.repository.table.where({ giorno: prevDay }).first()).pipe(
+      switchMap((prevLett) => {
         lettura.consumo = this.calcolaConsumo(lettura, prevLett);
         return this.repository.save(lettura);
-      }));
-
+      })
+    );
   }
 
   elimina(lettura: Lettura): Observable<void> {
@@ -103,20 +94,65 @@ export class LetturaService {
     });
   }
 
-  private calcolaConsumo(currLett: Lettura, prevLett: Lettura | undefined | null): number {
+  private calcolaConsumo(
+    currLett: Lettura,
+    prevLett: Lettura | undefined | null
+  ): number {
     let consumo = 0;
     if (prevLett) {
-      const lastBaseline = 1502.1;
-      const dateBaseLine = new Date();
-      dateBaseLine.setFullYear(2024);
-      dateBaseLine.setDate(29);
-      dateBaseLine.setMonth(1);
-      dateBaseLine.setHours(0, 0, 0, 0);
-      const currLet = currLett.giorno > dateBaseLine ? currLett.lettura + lastBaseline : currLett.lettura;
-      const prevLet = prevLett.giorno > dateBaseLine ? prevLett.lettura + lastBaseline : prevLett.lettura;
-      consumo = Number.parseFloat(((currLet * 100 - prevLet * 100) / 100).toFixed(2));
+      const currCamb = this.getCambioAnno(currLett.giorno);
+      console.log('curr: ', currLett);
+      console.log('base: ', currCamb);
+      const baseLineDate = currCamb.dateBaseLine;
+      const baseLineValue = currCamb.lastBaseline;
+      const currLet =
+        currLett.giorno > baseLineDate
+          ? currLett.lettura + baseLineValue
+          : currLett.lettura;
+      const prevLet =
+        prevLett.giorno > baseLineDate
+          ? prevLett.lettura + baseLineValue
+          : prevLett.lettura;
+      consumo = Number.parseFloat(
+        ((currLet * 100 - prevLet * 100) / 100).toFixed(2)
+      );
     }
     if (consumo < 0) return 0;
     return consumo;
+  }
+
+  getCambioAnno(giorno: Date) {
+    const firstBaseLine = new Date();
+    firstBaseLine.setFullYear(2024);
+    firstBaseLine.setDate(29);
+    firstBaseLine.setMonth(1);
+    firstBaseLine.setHours(0, 0, 0, 0);
+    const baseLines = [
+      new CambioAnno(1502.1, 2024, firstBaseLine),
+      new CambioAnno(1317.368, 2025),
+      new CambioAnno(1351.9300000000014, 2026), //FIXME mettere il valore corretto
+    ];
+    const currCamb = this.recuperaCambioAnno(
+      baseLines,
+      giorno.getTime()
+    );
+    return currCamb;
+  }
+
+  private recuperaCambioAnno(
+    baseLines: CambioAnno[],
+    current: number
+  ): CambioAnno {
+    let cambio: CambioAnno = baseLines[0];
+    if (current <= cambio.dateBaseLine.getTime()) return cambio;
+    baseLines.forEach((val) => {
+      if (
+        (current >= cambio.dateBaseLine.getTime() &&
+          current < val.dateBaseLine.getTime()) ||
+        current >= val.dateBaseLine.getTime()
+      )
+        cambio = val;
+    });
+    return cambio;
   }
 }
