@@ -21,7 +21,6 @@ export interface UsoElettrodomestico extends Identifiable {
 export interface Lettura extends Identifiable {
   lettura: number;
   consumo: number;
-  consumoTotale: number;
   giorno: Date;
   escludiDaMedia: boolean;
   escludiDaMinMax: boolean;

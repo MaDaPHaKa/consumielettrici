@@ -1,26 +1,12 @@
 <mat-toolbar>
-  <div class="columns">
-    <div class="column">
-      <span class="header" [routerLink]="'/home'">Home</span>
-    </div>
-    <div class="column">
-      <span class="header" [routerLink]="'/letture'">Letture</span>
-    </div>
-    <div class="column">
-      <span class="header" [routerLink]="'/elettrodomestici'"
-        >Elettrodomestici</span
-      >
-    </div>
-    <div class="column">
-      <span class="header" [routerLink]="'/cambi-anno'">Anni Bolletta</span>
-    </div>
-    <div class="column">
-      <span class="header" (click)="export()">Export</span>
-    </div>
-    <div class="column">
-      <span class="header" (click)="fileUpload.click()">Import</span>
-    </div>
-  </div>
+  <nav class="nav-links">
+    <span class="header" [routerLink]="'/home'">Home</span>
+    <span class="header" [routerLink]="'/letture'">Letture</span>
+    <span class="header" [routerLink]="'/elettrodomestici'">Elettrodomestici</span>
+    <span class="header" [routerLink]="'/cambi-anno'">Anni Bolletta</span>
+    <span class="header" (click)="export()">Export</span>
+    <span class="header" (click)="fileUpload.click()">Import</span>
+  </nav>
 </mat-toolbar>
 <input
   type="file"

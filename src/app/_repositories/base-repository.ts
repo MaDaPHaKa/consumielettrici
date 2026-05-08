@@ -25,12 +25,24 @@ export abstract class BaseRepository<T extends Identifiable> {
     return from(this.table.where('giorno').equals(giornoVal).toArray());
   }
 
+  liveByGiorno(giornoVal: Date): Observable<T[]> {
+    return from(liveQuery(() => this.table.where('giorno').equals(giornoVal).toArray()));
+  }
+
+  liveAll(): Observable<T[]> {
+    return from(liveQuery(() => this.table.toArray()));
+  }
+
   save(lettura: T): Observable<number> {
     if (lettura.id) {
       return from(this.table.put(lettura, lettura.id));
     } else {
       return from(this.table.add(lettura));
     }
+  }
+
+  bulkSave(items: T[]): Observable<unknown> {
+    return from(this.table.bulkPut(items));
   }
 
   deleteByEntity(entity: T): Observable<void> {
