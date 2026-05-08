@@ -64,21 +64,27 @@ export class HomeComponent extends AbstractLettureSearch implements OnInit {
 
   afterFilter(): void {
     this.dataSource.sort((a, b) => b.giorno.getTime() - a.giorno.getTime());
-    if (this.dataSource.length > 0) {
-      const copy = this.dataSource.slice();
-      const perMinMax = copy
-        .filter((el) => !el.escludiDaMinMax && el.consumo > 0)
-        .sort((a, b) => a.consumo - b.consumo);
-      this.max = perMinMax[perMinMax.length - 1].consumo;
-      this.min = perMinMax[0].consumo;
-      const mediaList = copy.filter((el) => !el.escludiDaMedia);
-      this.media =
-        mediaList.reduce((partialSum, a) => partialSum + a.consumo, 0) /
-        mediaList.length;
-      this.somma = mediaList.reduce(
-        (partialSum, a) => partialSum + a.consumo,
-        0
-      );
+    if (this.dataSource.length === 0) return;
+
+    let somma = 0;
+    let countMedia = 0;
+    let min = Number.POSITIVE_INFINITY;
+    let max = Number.NEGATIVE_INFINITY;
+
+    for (const el of this.dataSource) {
+      if (!el.escludiDaMedia) {
+        somma += el.consumo;
+        countMedia++;
+      }
+      if (!el.escludiDaMinMax && el.consumo > 0) {
+        if (el.consumo < min) min = el.consumo;
+        if (el.consumo > max) max = el.consumo;
+      }
     }
+
+    this.somma = somma;
+    this.media = countMedia > 0 ? somma / countMedia : 0;
+    this.min = min === Number.POSITIVE_INFINITY ? 0 : min;
+    this.max = max === Number.NEGATIVE_INFINITY ? 0 : max;
   }
 }

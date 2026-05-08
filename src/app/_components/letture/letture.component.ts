@@ -110,7 +110,7 @@ export class LettureComponent
   }
 
   ngAfterViewInit() {
-    if (this.paginated) this.paginated.paginator = this.paginator;
+    this.paginated.paginator = this.paginator;
   }
 
   aggiungi() {
@@ -233,7 +233,6 @@ export class LettureComponent
 
   afterFilter() {
     this.dataSource.sort((a, b) => b.giorno.getTime() - a.giorno.getTime());
-    this.paginated = new MatTableDataSource(this.dataSource);
-    this.paginated.paginator = this.paginator;
+    this.paginated.data = this.dataSource;
   }
 }
