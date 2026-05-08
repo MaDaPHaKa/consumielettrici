@@ -13,11 +13,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTableModule } from '@angular/material/table';
 import { LetturaService } from '@services/lettura.service';
 import { SnackbarService } from '@services/snackbar.service';
-import { UtilsService } from '@services/utils.service';
 import { AbstractLettureSearch } from  '@abstract/abstract-letture-search';
 import { LetturaFilterDto } from  '@dto/lettura-filter-dto';
 import { LettureFilterComponent } from '@components/letture-filter/letture-filter.component';
 import { UsoElettrodomesticoComponent } from '@components/uso-elettrodomestico/uso-elettrodomestico.component';
+import { GiornoSettimanaPipe } from '@pipes/giorno-settimana.pipe';
 
 @Component({
   selector: 'app-home',
@@ -31,11 +31,11 @@ import { UsoElettrodomesticoComponent } from '@components/uso-elettrodomestico/u
     MatTableModule,
     LettureFilterComponent,
     UsoElettrodomesticoComponent,
+    GiornoSettimanaPipe,
   ],
 })
 export class HomeComponent extends AbstractLettureSearch implements OnInit {
   private readonly service = inject(LetturaService);
-  private readonly utils = inject(UtilsService);
   private readonly snackBar = inject(SnackbarService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
@@ -80,10 +80,5 @@ export class HomeComponent extends AbstractLettureSearch implements OnInit {
         0
       );
     }
-  }
-
-  giornoSettimana(d: Date) {
-    if (d instanceof Date) return this.utils.giornoSettimana(d);
-    return '';
   }
 }

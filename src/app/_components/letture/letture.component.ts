@@ -37,6 +37,7 @@ import { LetturaElettrodomesticiComponent } from '@components/lettura-elettrodom
 import { LettureFilterComponent } from '@components/letture-filter/letture-filter.component';
 import { NuovoAnnoDialogComponent } from '@components/nuovo-anno-dialog/nuovo-anno-dialog.component';
 import { UsoElettrodomesticoComponent } from '@components/uso-elettrodomestico/uso-elettrodomestico.component';
+import { GiornoSettimanaPipe } from '@pipes/giorno-settimana.pipe';
 
 @Component({
   selector: 'app-letture',
@@ -51,6 +52,7 @@ import { UsoElettrodomesticoComponent } from '@components/uso-elettrodomestico/u
     MatTableModule,
     LettureFilterComponent,
     UsoElettrodomesticoComponent,
+    GiornoSettimanaPipe,
   ],
   animations: [
     trigger('detailExpand', [
@@ -109,10 +111,6 @@ export class LettureComponent
 
   ngAfterViewInit() {
     if (this.paginated) this.paginated.paginator = this.paginator;
-  }
-
-  giornoSettimana(d: Date) {
-    return this.utils.giornoSettimana(d);
   }
 
   aggiungi() {

@@ -11,7 +11,7 @@
 <mat-form-field class="pl-1">
   <mat-label>Elettrodomestico</mat-label>
   <mat-select multiple [(ngModel)]="elettrodomestico">
-    @for (el of elett; track el) {
+    @for (el of elett; track el.id) {
       <mat-option [value]="el">
         {{ el.nome }}
       </mat-option>
