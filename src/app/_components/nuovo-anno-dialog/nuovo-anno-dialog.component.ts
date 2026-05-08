@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -21,6 +21,7 @@ import { SnackbarService } from  '@services/snackbar.service';
   selector: 'app-nuovo-anno-dialog',
   templateUrl: './nuovo-anno-dialog.component.html',
   styleUrls: ['./nuovo-anno-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormsModule,
     ReactiveFormsModule,
@@ -39,6 +40,7 @@ export class NuovoAnnoDialogComponent implements OnInit {
   private readonly dialogRef = inject(
     MatDialogRef<NuovoAnnoDialogComponent>
   );
+  private readonly cdr = inject(ChangeDetectorRef);
 
   form: FormGroup = new FormGroup([]);
   override = false;

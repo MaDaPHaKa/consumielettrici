@@ -1,4 +1,4 @@
-import { Component, inject, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,6 +12,7 @@ import { LetturaElettrodomesticiComponent } from '@components/lettura-elettrodom
   selector: 'app-uso-elettrodomestico',
   templateUrl: './uso-elettrodomestico.component.html',
   styleUrls: ['./uso-elettrodomestico.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatButtonModule, MatIconModule],
 })
 export class UsoElettrodomesticoComponent {

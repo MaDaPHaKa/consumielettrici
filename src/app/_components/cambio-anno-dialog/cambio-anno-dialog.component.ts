@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -39,6 +39,7 @@ interface DialogData {
     MatFormFieldModule,
     MatInputModule,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CambioAnnoDialogComponent implements OnInit {
   private readonly builder = inject(FormBuilder);

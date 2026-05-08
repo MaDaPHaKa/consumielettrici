@@ -1,5 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTableModule } from '@angular/material/table';
@@ -15,6 +23,7 @@ import { UsoElettrodomesticoComponent } from '@components/uso-elettrodomestico/u
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     MatButtonModule,
@@ -28,6 +37,8 @@ export class HomeComponent extends AbstractLettureSearch implements OnInit {
   private readonly service = inject(LetturaService);
   private readonly utils = inject(UtilsService);
   private readonly snackBar = inject(SnackbarService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   displayedColumns = ['data', 'giorno', 'consumo', 'elettrodomestici'];
   somma: number = -1;
@@ -36,15 +47,19 @@ export class HomeComponent extends AbstractLettureSearch implements OnInit {
   max: number = -1;
 
   ngOnInit(): void {
-    this.service.getTableValues().subscribe({
-      next: (data) => {
-        this.allData = data;
-        this.cerca(new LetturaFilterDto());
-      },
-      error: (err) => {
-        this.snackBar.error('Errore caricamento dati: ' + err);
-      },
-    });
+    this.service
+      .getTableValues()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.allData = data;
+          this.cerca(new LetturaFilterDto());
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          this.snackBar.error('Errore caricamento dati: ' + err);
+        },
+      });
   }
 
   afterFilter(): void {

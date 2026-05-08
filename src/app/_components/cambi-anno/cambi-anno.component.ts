@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableModule } from '@angular/material/table';
@@ -15,6 +16,7 @@ import { SnackbarService } from '@services/snackbar.service';
   selector: 'app-cambi-anno',
   templateUrl: './cambi-anno.component.html',
   styleUrls: ['./cambi-anno.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, MatButtonModule, MatTableModule],
 })
 export class CambiAnnoComponent implements OnInit {
@@ -22,13 +24,18 @@ export class CambiAnnoComponent implements OnInit {
   private readonly letturaService = inject(LetturaService);
   readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(SnackbarService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef);
 
   dataSource: CambioAnno[] = [];
   displayedColumns = ['anno', 'data', 'lastBaseline', 'note', 'azioni'];
 
   ngOnInit(): void {
-    this.service.getAll().subscribe({
-      next: (data) => (this.dataSource = data),
+    this.service.getAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (data) => {
+        this.dataSource = data;
+        this.cdr.markForCheck();
+      },
       error: (err) => {
         this.snackBar.error('Errore caricamento cambi anno: ' + err);
       },

@@ -1,4 +1,5 @@
-import { Component, inject, input, OnInit, output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, input, OnInit, output } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -14,6 +15,7 @@ import { LetturaFilterDto } from  '@dto/lettura-filter-dto';
   selector: 'app-letture-filter',
   templateUrl: './letture-filter.component.html',
   styleUrls: ['./letture-filter.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormsModule,
     MatButtonModule,
@@ -26,6 +28,8 @@ import { LetturaFilterDto } from  '@dto/lettura-filter-dto';
 export class LettureFilterComponent implements OnInit {
   private readonly elettrRepo = inject(ElettrodomesticoRepository);
   private readonly snackBar = inject(SnackbarService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly cercaEvent = output<LetturaFilterDto>();
   readonly dalInput = input<Date | undefined>(undefined, { alias: 'dal' });
@@ -39,9 +43,11 @@ export class LettureFilterComponent implements OnInit {
   ngOnInit(): void {
     this.dal = this.dalInput();
     this.al = this.alInput();
-    this.elettrRepo.getAll().subscribe({
-      next: (data) =>
-        (this.elett = data.sort((a, b) => a.nome.localeCompare(b.nome))),
+    this.elettrRepo.getAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (data) => {
+        this.elett = data.sort((a, b) => a.nome.localeCompare(b.nome));
+        this.cdr.markForCheck();
+      },
       error: (err) => {
         this.snackBar.error('Errore caricamento elettrodomestici: ' + err);
       },

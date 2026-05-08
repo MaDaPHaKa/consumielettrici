@@ -1,4 +1,4 @@
-import { Component, inject, input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -21,6 +21,7 @@ import { UtilsService } from  '@services/utils.service';
   selector: 'app-aggiungi-lettura',
   templateUrl: './aggiungi-lettura.component.html',
   styleUrls: ['./aggiungi-lettura.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
     RouterLink,

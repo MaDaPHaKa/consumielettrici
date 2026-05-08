@@ -1,4 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormBuilder,
   FormControl,
@@ -28,6 +29,7 @@ import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialo
   selector: 'app-lettura-elettrodomestici',
   templateUrl: './lettura-elettrodomestici.component.html',
   styleUrls: ['./lettura-elettrodomestici.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
     MatButtonModule,
@@ -48,6 +50,8 @@ export class LetturaElettrodomesticiComponent implements OnInit {
   private readonly elettrRepo = inject(ElettrodomesticoRepository);
   private readonly snackBar = inject(SnackbarService);
   private readonly utils = inject(UtilsService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef);
 
   uso: LetturaElettrodomesticoDto | undefined = this.data.uso;
   form: FormGroup = new FormGroup([]);
@@ -59,9 +63,11 @@ export class LetturaElettrodomesticiComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.elettrRepo.getAll().subscribe({
-      next: (data) =>
-        (this.elett = data.sort((a, b) => a.nome.localeCompare(b.nome))),
+    this.elettrRepo.getAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (data) => {
+        this.elett = data.sort((a, b) => a.nome.localeCompare(b.nome));
+        this.cdr.markForCheck();
+      },
       error: (err) => {
         this.snackBar.error('Errore caricamento elettrodomestici: ' + err);
       },

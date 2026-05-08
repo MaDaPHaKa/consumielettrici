@@ -8,11 +8,15 @@ import {
 import { CommonModule } from '@angular/common';
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
+  DestroyRef,
   inject,
   OnInit,
   ViewChild,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -23,7 +27,6 @@ import { Lettura } from '@db/db';
 import { UsoElettrodomesticoRepository } from '@repositories/uso-elettrodomestico-repository';
 import { LetturaService } from '@services/lettura.service';
 import { SnackbarService } from '@services/snackbar.service';
-import { UsoElettrodomesticoService } from '@services/uso-elettrodomestico.service';
 import { UtilsService } from '@services/utils.service';
 import { AbstractLettureSearch } from  '@abstract/abstract-letture-search';
 import { LetturaDto } from  '@dto/lettura-dto';
@@ -39,6 +42,7 @@ import { UsoElettrodomesticoComponent } from '@components/uso-elettrodomestico/u
   selector: 'app-letture',
   templateUrl: './letture.component.html',
   styleUrls: ['./letture.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     MatButtonModule,
@@ -64,10 +68,11 @@ export class LettureComponent
   implements OnInit, AfterViewInit {
   private readonly service = inject(LetturaService);
   private readonly usoEletRepo = inject(UsoElettrodomesticoRepository);
-  private readonly usoEletService = inject(UsoElettrodomesticoService);
   readonly dialog = inject(MatDialog);
   private readonly utils = inject(UtilsService);
   private readonly snackBar = inject(SnackbarService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   pageSize = 20;
   totalSize = 0;
@@ -87,15 +92,19 @@ export class LettureComponent
   ];
 
   ngOnInit(): void {
-    this.service.getTableValues().subscribe({
-      next: (data) => {
-        this.allData = data;
-        this.cerca(new LetturaFilterDto());
-      },
-      error: (err) => {
-        this.snackBar.error('Errore caricamento letture: ' + err);
-      },
-    });
+    this.service
+      .getTableValues()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.allData = data;
+          this.cerca(new LetturaFilterDto());
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          this.snackBar.error('Errore caricamento letture: ' + err);
+        },
+      });
   }
 
   ngAfterViewInit() {
@@ -139,6 +148,7 @@ export class LettureComponent
               (el) => el.id !== toDelete.id
             );
             this.snackBar.success('Lettura eliminata');
+            this.cdr.markForCheck();
           },
           error: (err) => {
             this.snackBar.error('Errore cancellazione lettura: ' + err);
@@ -174,17 +184,11 @@ export class LettureComponent
           forkJoin(saves$).subscribe({
             complete: () => {
               this.snackBar.success('Salvataggio completato.');
-              this.ngOnInit();
             },
           });
         } else {
           this.usoEletRepo.save(result).subscribe({
             next: () => {
-              this.usoEletService.getByGiorno(lettura.giorno).subscribe({
-                next: (data) => {
-                  lettura.elettrodomestici = data;
-                },
-              });
               this.snackBar.success('Utilizzo salvato');
             },
             error: (err) => {
@@ -197,7 +201,7 @@ export class LettureComponent
   }
 
   onUsoUpdate(_event: any) {
-    this.ngOnInit();
+    // liveQuery in getTableValues auto-refreshes on table changes
   }
 
   ricalcolaConsumi() {

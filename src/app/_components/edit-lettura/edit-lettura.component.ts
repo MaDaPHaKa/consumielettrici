@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -18,6 +18,7 @@ type EditMode = 'lettura' | 'consumo';
   selector: 'app-edit-lettura',
   templateUrl: './edit-lettura.component.html',
   styleUrls: ['./edit-lettura.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
     MatButtonModule,
@@ -32,6 +33,7 @@ export class EditLetturaComponent extends AggiungiLetturaComponent {
   readonly dialogRef = inject(MatDialogRef<EditLetturaComponent>);
   readonly data = inject<Lettura>(MAT_DIALOG_DATA);
   private readonly cambioAnnoService = inject(CambioAnnoService);
+  private readonly cdr = inject(ChangeDetectorRef);
   letturaPrevG = 0;
   giornoCambioBaseline = false;
   mode: EditMode = 'consumo';
@@ -51,10 +53,14 @@ export class EditLetturaComponent extends AggiungiLetturaComponent {
       next: (currCamb) => {
         this.giornoCambioBaseline =
           currCamb.dateBaseLine.toUTCString() === giornoPrima.toUTCString();
+        this.cdr.markForCheck();
       },
     });
     this.service.repository.getByGiorno(giornoPrima).subscribe({
-      next: (data) => (this.letturaPrevG = data[0]?.lettura ?? 0),
+      next: (data) => {
+        this.letturaPrevG = data[0]?.lettura ?? 0;
+        this.cdr.markForCheck();
+      },
     });
   }
 

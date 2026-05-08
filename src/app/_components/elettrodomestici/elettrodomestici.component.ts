@@ -1,4 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -16,6 +17,7 @@ import { ElettrodomesticoTableDto } from  '@dto/elettrodomestico-table-dto';
   selector: 'app-elettrodomestici',
   templateUrl: './elettrodomestici.component.html',
   styleUrls: ['./elettrodomestici.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormsModule,
     MatButtonModule,
@@ -29,13 +31,15 @@ export class ElettrodomesticiComponent implements OnInit {
   private readonly service = inject(ElettrodomesticoService);
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(SnackbarService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef);
 
   nuovo?: string;
   dataSource: ElettrodomesticoTableDto[] = [];
   displayedColumns = ['nome', 'azioni'];
 
   ngOnInit() {
-    this.repository.getAll().subscribe({
+    this.repository.getAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
         this.dataSource = data.map((el) =>
           Object.assign(new ElettrodomesticoTableDto(), el)
@@ -43,12 +47,16 @@ export class ElettrodomesticiComponent implements OnInit {
         this.dataSource.sort((a, b) => a.nome.localeCompare(b.nome));
         this.dataSource.forEach((el) =>
           this.service.canDelete(el).subscribe({
-            next: (res) => (el.canDelete = res),
+            next: (res) => {
+              el.canDelete = res;
+              this.cdr.markForCheck();
+            },
             error: (err) => {
               this.snackBar.error('Errore check canDelete: ' + err);
             },
           })
         );
+        this.cdr.markForCheck();
       },
       error: (err) => {
         this.snackBar.error('Errore caricamento elettrodomestici: ' + err);

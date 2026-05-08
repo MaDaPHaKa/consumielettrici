@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 import { liveQuery } from 'dexie';
 import { Observable, forkJoin, from, map, mergeMap, of, switchMap } from 'rxjs';
-import { CambioAnno, Lettura } from '../_db/db';
+import { CambioAnno, Lettura, assembleLetturaDtos } from '../_db/db';
 import { LetturaRepository } from '../_repositories/lettura-repository';
 import { LetturaDto } from '../dto/lettura-dto';
 import { CambioAnnoService } from './cambio-anno.service';
-import { UsoElettrodomesticoService } from './uso-elettrodomestico.service';
 import { UtilsService } from './utils.service';
 
 @Injectable({
@@ -14,28 +13,12 @@ import { UtilsService } from './utils.service';
 export class LetturaService {
   constructor(
     public repository: LetturaRepository,
-    private usoService: UsoElettrodomesticoService,
     private utils: UtilsService,
     private cambioAnnoService: CambioAnnoService
   ) {}
 
   getTableValues(): Observable<LetturaDto[]> {
-    return this.repository.getAll().pipe(
-      mergeMap((letture) =>
-        forkJoin(
-          letture.map((lettura) =>
-            this.usoService.getByGiorno(lettura.giorno).pipe(
-              map((usiDto) => {
-                const dto = new LetturaDto();
-                Object.assign(dto, lettura);
-                dto.elettrodomestici = usiDto;
-                return dto;
-              })
-            )
-          )
-        )
-      )
-    );
+    return from(liveQuery(() => assembleLetturaDtos()));
   }
 
   getLetturePerChart(

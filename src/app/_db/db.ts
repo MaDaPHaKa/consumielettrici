@@ -1,4 +1,6 @@
 import Dexie, { Table } from 'dexie';
+import { LetturaDto } from '../dto/lettura-dto';
+import { LetturaElettrodomesticoDto } from '../dto/lettura-elettrodomestico-dto';
 
 export interface Identifiable {
   id?: number;
@@ -95,3 +97,39 @@ export class AppDB extends Dexie {
 }
 
 export const db = new AppDB();
+
+/**
+ * Bulk join: letture + usoElettrodomestici + elettrodomestici in 1 IDB tx.
+ * Builds in-memory maps to avoid N+1 query storm.
+ */
+export async function assembleLetturaDtos(): Promise<LetturaDto[]> {
+  const [letture, usi, elettr] = await Promise.all([
+    db.letture.toArray(),
+    db.usoElettrodomestici.toArray(),
+    db.elettrodomestici.toArray(),
+  ]);
+  const elMap = new Map<number, Elettrodomestico>();
+  for (const e of elettr) {
+    if (e.id != null) elMap.set(e.id, e);
+  }
+  const usiByDay = new Map<number, LetturaElettrodomesticoDto[]>();
+  for (const u of usi) {
+    const k = u.giorno.getTime();
+    const dto = new LetturaElettrodomesticoDto();
+    Object.assign(dto, u);
+    const e = elMap.get(u.elettrodomesticoId);
+    if (e) dto.elettrodomestico = e;
+    const arr = usiByDay.get(k);
+    if (arr) {
+      arr.push(dto);
+    } else {
+      usiByDay.set(k, [dto]);
+    }
+  }
+  return letture.map((l) => {
+    const dto = new LetturaDto();
+    Object.assign(dto, l);
+    dto.elettrodomestici = usiByDay.get(l.giorno.getTime()) ?? [];
+    return dto;
+  });
+}
