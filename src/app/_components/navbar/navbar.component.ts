@@ -5,9 +5,9 @@ import { RouterLink } from '@angular/router';
 import { exportDB, importInto } from 'dexie-export-import';
 import * as FileSaver from 'file-saver-es';
 import { EMPTY, Observable, from, switchMap } from 'rxjs';
-import { db, SEED_CAMBI_ANNO } from 'src/app/_db/db';
-import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
-import { SnackbarService } from 'src/app/_services/snackbar.service';
+import { db, SEED_CAMBI_ANNO } from  '@db/db';
+import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
+import { SnackbarService } from  '@services/snackbar.service';
 
 @Component({
   selector: 'app-navbar',

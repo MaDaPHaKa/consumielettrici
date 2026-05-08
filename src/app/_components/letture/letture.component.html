@@ -1,18 +1,13 @@
 <div class="columns is-centered">
   <div class="column is-full table-container">
-    <app-letture-filter
-      class="filter-full"
-      (cercaEvent)="cerca($event)"
-    ></app-letture-filter>
-    <button mat-button (click)="aggiungi()">Aggiungi</button>
-    <button mat-button (click)="ricalcolaConsumi()">Ricalcola Consumi</button>
+    <div class="column is-full">
+      <app-letture-filter class="filter-full" (cercaEvent)="cerca($event)"></app-letture-filter>
+      <button mat-button (click)="aggiungi()">Aggiungi</button>
+      <button mat-button (click)="ricalcolaConsumi()">Ricalcola Consumi</button>
+      <button mat-button (click)="nuovoAnno()"> Nuovo Anno </button>
+    </div>
     <section class="overflow-table-container">
-      <table
-        mat-table
-        [dataSource]="paginated"
-        class="mat-elevation-z8"
-        multiTemplateDataRows
-        >
+      <table mat-table [dataSource]="paginated" class="mat-elevation-z8" multiTemplateDataRows>
         <ng-container matColumnDef="data">
           <th mat-header-cell *matHeaderCellDef>Data</th>
           <td mat-cell *matCellDef="let element">
@@ -36,10 +31,7 @@
           <th mat-header-cell *matHeaderCellDef>Elettrodomestici</th>
           <td mat-cell *matCellDef="let element">
             @for (el of element.elettrodomestici; track el) {
-              <app-uso-elettrodomestico
-                [uso]="el"
-                (modified)="onUsoUpdate($event)"
-              ></app-uso-elettrodomestico>
+            <app-uso-elettrodomestico [uso]="el" (modified)="onUsoUpdate($event)"></app-uso-elettrodomestico>
             }
           </td>
         </ng-container>
@@ -64,52 +56,25 @@
         <ng-container matColumnDef="azioni">
           <th mat-header-cell *matHeaderCellDef>Azioni</th>
           <td mat-cell *matCellDef="let element">
-            <button
-              mat-icon-button
-              class="small-icon-button"
-              (click)="elimina(element)"
-              aria-label="Elimina"
-              >
+            <button mat-icon-button class="small-icon-button" (click)="elimina(element)" aria-label="Elimina">
               <mat-icon>delete</mat-icon>
             </button>
-            <button
-              mat-icon-button
-              class="small-icon-button"
-              (click)="edit(element)"
-              aria-label="Edit"
-              >
+            <button mat-icon-button class="small-icon-button" (click)="edit(element)" aria-label="Edit">
               <mat-icon>edit</mat-icon>
             </button>
-            <button
-              mat-icon-button
-              class="small-icon-button"
-              (click)="aggiungiElettrodomestico(element)"
-              aria-label="Aggiungi Uso"
-              >
+            <button mat-icon-button class="small-icon-button" (click)="aggiungiElettrodomestico(element)"
+              aria-label="Aggiungi Uso">
               <mat-icon>add</mat-icon>
             </button>
           </td>
         </ng-container>
 
-        <tr
-          mat-header-row
-          *matHeaderRowDef="displayedColumns; sticky: true"
-        ></tr>
-        <tr
-          mat-row
-          *matRowDef="let row; columns: displayedColumns"
-          class="example-element-row"
-        ></tr>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" class="example-element-row"></tr>
       </table>
     </section>
-    <mat-paginator
-      #paginator
-      [pageSize]="pageSize"
-      [pageSizeOptions]="[5, 10, 20,50, 100, allData.length]"
-      [showFirstLastButtons]="true"
-      [length]="totalSize"
-      [pageIndex]="currentPage"
-      >
+    <mat-paginator #paginator [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 20,50, 100, allData.length]"
+      [showFirstLastButtons]="true" [length]="totalSize" [pageIndex]="currentPage">
     </mat-paginator>
   </div>
 </div>

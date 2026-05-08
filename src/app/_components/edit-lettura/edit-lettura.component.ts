@@ -6,9 +6,10 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { Lettura } from 'src/app/_db/db';
-import { CambioAnnoService } from 'src/app/_services/cambio-anno.service';
-import { AggiungiLetturaComponent } from '../aggiungi-lettura/aggiungi-lettura.component';
+import { AggiungiLetturaComponent } from '@components/aggiungi-lettura/aggiungi-lettura.component';
+import { Lettura } from '@db/db';
+import { roundTo } from '@functions/utils';
+import { CambioAnnoService } from '@services/cambio-anno.service';
 
 @Component({
   selector: 'app-edit-lettura',
@@ -58,7 +59,7 @@ export class EditLetturaComponent extends AggiungiLetturaComponent {
       const letturaVal = this.giornoCambioBaseline
         ? consumo
         : consumo + this.letturaPrevG;
-      this.form.get('lettura')?.setValue(letturaVal);
+      this.form.get('lettura')?.setValue(roundTo(letturaVal, 3));
     }
 
     super.salva();

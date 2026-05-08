@@ -2,11 +2,11 @@ import { Component, inject, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { UsoElettrodomesticoRepository } from 'src/app/_repositories/uso-elettrodomestico-repository';
-import { SnackbarService } from 'src/app/_services/snackbar.service';
-import { LetturaElettrodomesticoDto } from 'src/app/dto/lettura-elettrodomestico-dto';
-import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
-import { LetturaElettrodomesticiComponent } from '../lettura-elettrodomestici/lettura-elettrodomestici.component';
+import { UsoElettrodomesticoRepository } from  '@repositories/uso-elettrodomestico-repository';
+import { SnackbarService } from  '@services/snackbar.service';
+import { LetturaElettrodomesticoDto } from  '@dto/lettura-elettrodomestico-dto';
+import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
+import { LetturaElettrodomesticiComponent } from '@components/lettura-elettrodomestici/lettura-elettrodomestici.component';
 
 @Component({
   selector: 'app-uso-elettrodomestico',

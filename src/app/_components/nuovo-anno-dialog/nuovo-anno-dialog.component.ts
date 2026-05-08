@@ -13,9 +13,9 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { CambioAnno } from 'src/app/_db/db';
-import { CambioAnnoService } from 'src/app/_services/cambio-anno.service';
-import { SnackbarService } from 'src/app/_services/snackbar.service';
+import { CambioAnno } from  '@db/db';
+import { CambioAnnoService } from  '@services/cambio-anno.service';
+import { SnackbarService } from  '@services/snackbar.service';
 
 @Component({
   selector: 'app-nuovo-anno-dialog',

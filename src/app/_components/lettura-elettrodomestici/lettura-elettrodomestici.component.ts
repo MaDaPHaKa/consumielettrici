@@ -16,13 +16,13 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { Elettrodomestico, UsoElettrodomestico } from 'src/app/_db/db';
-import { ElettrodomesticoRepository } from 'src/app/_repositories/elettrodomestico-repository';
-import { SnackbarService } from 'src/app/_services/snackbar.service';
-import { UtilsService } from 'src/app/_services/utils.service';
-import { LetturaDto } from 'src/app/dto/lettura-dto';
-import { LetturaElettrodomesticoDto } from 'src/app/dto/lettura-elettrodomestico-dto';
-import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { Elettrodomestico, UsoElettrodomestico } from  '@db/db';
+import { ElettrodomesticoRepository } from  '@repositories/elettrodomestico-repository';
+import { SnackbarService } from  '@services/snackbar.service';
+import { UtilsService } from  '@services/utils.service';
+import { LetturaDto } from  '@dto/lettura-dto';
+import { LetturaElettrodomesticoDto } from  '@dto/lettura-elettrodomestico-dto';
+import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-lettura-elettrodomestici',

@@ -18,7 +18,30 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "ES2022",
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    "paths": {
+      "@components/*": [
+        "./src/app/_components/*"
+      ],
+      "@services/*": [
+        "./src/app/_services/*"
+      ],
+      "@repositories/*": [
+        "./src/app/_repositories/*"
+      ],
+      "@functions/*": [
+        "./src/app/_functions/*"
+      ],
+      "@db/*": [
+        "./src/app/_db/*"
+      ],
+      "@abstract/*": [
+        "./src/app/abstract/*"
+      ],
+      "@dto/*": [
+        "./src/app/dto/*"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

@@ -12,10 +12,10 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterLink } from '@angular/router';
-import { Lettura } from 'src/app/_db/db';
-import { LetturaService } from 'src/app/_services/lettura.service';
-import { SnackbarService } from 'src/app/_services/snackbar.service';
-import { UtilsService } from 'src/app/_services/utils.service';
+import { Lettura } from  '@db/db';
+import { LetturaService } from  '@services/lettura.service';
+import { SnackbarService } from  '@services/snackbar.service';
+import { UtilsService } from  '@services/utils.service';
 
 @Component({
   selector: 'app-aggiungi-lettura',

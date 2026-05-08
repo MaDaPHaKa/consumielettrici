@@ -19,20 +19,21 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { catchError, forkJoin, of } from 'rxjs';
-import { Lettura } from 'src/app/_db/db';
-import { UsoElettrodomesticoRepository } from 'src/app/_repositories/uso-elettrodomestico-repository';
-import { LetturaService } from 'src/app/_services/lettura.service';
-import { SnackbarService } from 'src/app/_services/snackbar.service';
-import { UsoElettrodomesticoService } from 'src/app/_services/uso-elettrodomestico.service';
-import { UtilsService } from 'src/app/_services/utils.service';
-import { AbstractLettureSearch } from 'src/app/abstract/abstract-letture-search';
-import { LetturaDto } from 'src/app/dto/lettura-dto';
-import { LetturaFilterDto } from 'src/app/dto/lettura-filter-dto';
-import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
-import { EditLetturaComponent } from '../edit-lettura/edit-lettura.component';
-import { LetturaElettrodomesticiComponent } from '../lettura-elettrodomestici/lettura-elettrodomestici.component';
-import { LettureFilterComponent } from '../letture-filter/letture-filter.component';
-import { UsoElettrodomesticoComponent } from '../uso-elettrodomestico/uso-elettrodomestico.component';
+import { Lettura } from '@db/db';
+import { UsoElettrodomesticoRepository } from '@repositories/uso-elettrodomestico-repository';
+import { LetturaService } from '@services/lettura.service';
+import { SnackbarService } from '@services/snackbar.service';
+import { UsoElettrodomesticoService } from '@services/uso-elettrodomestico.service';
+import { UtilsService } from '@services/utils.service';
+import { AbstractLettureSearch } from  '@abstract/abstract-letture-search';
+import { LetturaDto } from  '@dto/lettura-dto';
+import { LetturaFilterDto } from  '@dto/lettura-filter-dto';
+import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
+import { EditLetturaComponent } from '@components/edit-lettura/edit-lettura.component';
+import { LetturaElettrodomesticiComponent } from '@components/lettura-elettrodomestici/lettura-elettrodomestici.component';
+import { LettureFilterComponent } from '@components/letture-filter/letture-filter.component';
+import { NuovoAnnoDialogComponent } from '@components/nuovo-anno-dialog/nuovo-anno-dialog.component';
+import { UsoElettrodomesticoComponent } from '@components/uso-elettrodomestico/uso-elettrodomestico.component';
 
 @Component({
   selector: 'app-letture',
@@ -60,8 +61,7 @@ import { UsoElettrodomesticoComponent } from '../uso-elettrodomestico/uso-elettr
 })
 export class LettureComponent
   extends AbstractLettureSearch
-  implements OnInit, AfterViewInit
-{
+  implements OnInit, AfterViewInit {
   private readonly service = inject(LetturaService);
   private readonly usoEletRepo = inject(UsoElettrodomesticoRepository);
   private readonly usoEletService = inject(UsoElettrodomesticoService);
@@ -208,6 +208,24 @@ export class LettureComponent
       error: (err) => {
         this.snackBar.error('Errore update consumi: ' + err);
       },
+    });
+  }
+
+  nuovoAnno() {
+    const ref = this.dialog.open(NuovoAnnoDialogComponent, {
+      width: '420px',
+    });
+    ref.afterClosed().subscribe((res) => {
+      if (res?.ricalcola) {
+        this.service.ricalcolaConsumi().subscribe({
+          next: (results) => {
+            if (results.length === 0) return;
+            this.snackBar.success('Consumi ricalcolati');
+          },
+          error: (err) =>
+            this.snackBar.error('Errore ricalcolo consumi: ' + err),
+        });
+      }
     });
   }
 

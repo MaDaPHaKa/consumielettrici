@@ -5,10 +5,10 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { Elettrodomestico } from 'src/app/_db/db';
-import { ElettrodomesticoRepository } from 'src/app/_repositories/elettrodomestico-repository';
-import { SnackbarService } from 'src/app/_services/snackbar.service';
-import { LetturaFilterDto } from 'src/app/dto/lettura-filter-dto';
+import { Elettrodomestico } from  '@db/db';
+import { ElettrodomesticoRepository } from  '@repositories/elettrodomestico-repository';
+import { SnackbarService } from  '@services/snackbar.service';
+import { LetturaFilterDto } from  '@dto/lettura-filter-dto';
 
 @Component({
   selector: 'app-letture-filter',

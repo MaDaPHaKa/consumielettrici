@@ -5,12 +5,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
-import { Elettrodomestico } from 'src/app/_db/db';
-import { ElettrodomesticoRepository } from 'src/app/_repositories/elettrodomestico-repository';
-import { ElettrodomesticoService } from 'src/app/_services/elettrodomestico.service';
-import { SnackbarService } from 'src/app/_services/snackbar.service';
-import { ElettrodomesticoTableDto } from 'src/app/dto/elettrodomestico-table-dto';
-import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
+import { Elettrodomestico } from '@db/db';
+import { ElettrodomesticoRepository } from '@repositories/elettrodomestico-repository';
+import { ElettrodomesticoService } from '@services/elettrodomestico.service';
+import { SnackbarService } from '@services/snackbar.service';
+import { ElettrodomesticoTableDto } from  '@dto/elettrodomestico-table-dto';
 
 @Component({
   selector: 'app-elettrodomestici',
