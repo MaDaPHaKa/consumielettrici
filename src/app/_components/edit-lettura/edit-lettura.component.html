@@ -1,4 +1,13 @@
 <div class="pt-5 pl-4">
+  <mat-button-toggle-group
+    [value]="mode"
+    (change)="onModeChange($any($event.value))"
+    class="mb-3"
+  >
+    <mat-button-toggle value="lettura">Set Lettura</mat-button-toggle>
+    <mat-button-toggle value="consumo">Set Consumo</mat-button-toggle>
+  </mat-button-toggle-group>
+
   <form [formGroup]="form">
     <mat-form-field>
       <mat-label>Lettura</mat-label>
