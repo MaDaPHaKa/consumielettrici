@@ -40,6 +40,9 @@
       ],
       "@dto/*": [
         "./src/app/dto/*"
+      ],
+      "@pipes/*": [
+        "./src/app/_pipes/*"
       ]
     }
   },
